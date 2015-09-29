@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-#import "objc_actor.h"
+#import "objc_workflow.h"
 
 
 /* appInfo

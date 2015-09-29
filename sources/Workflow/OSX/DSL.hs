@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts, OverloadedStrings, RankNTypes #-}
 {-# LANGUAGE TemplateHaskell, ViewPatterns                   #-}
+-- | some higher-level workflows you can derive from the primitives in 'Workflow'. (also see the source)
 module Workflow.OSX.DSL where
 import           Workflow.OSX.Types
 
@@ -11,9 +12,9 @@ import           Network.HTTP.Types.URI      (renderQuery)
 import           Data.Monoid                 ((<>))
 
 
-makeFree ''ActionF
+makeFree ''WorkflowF
 
-insert :: (MonadAction m) => String -> m ()
+insert :: (MonadWorkflow m) => String -> m ()
 insert = sendText
 
 -- TODO
@@ -27,28 +28,30 @@ insert = sendText
 --
 -- module Commands.Compiler.Sugar where
 
--- I want "type = mapM_ (press . KeyChord [] . key)" to be "atomic" i.e. no delay between each step. I want "press (KeyChord [Command] RKey) >> type text" to be "laggy" i.e. some delay between each step. If I "instrument" some "Actions", by interleaving "Wait 25" between each step i.e. each "Free _", I can't distinguish between groups of steps. Thus, I should manually insert "Wait 25" between any steps that need some lag, or "automate it locally" in helper functions, but not "automate it globally" by interleaving.
+-- I want "type = mapM_ (press . KeyChord [] . key)" to be "atomic" i.e. no delay between each step. I want "press (KeyChord [Command] RKey) >> type text" to be "laggy" i.e. some delay between each step. If I "instrument" some "Workflow", by interleaving "Wait 25" between each step i.e. each "Free _", I can't distinguish between groups of steps. Thus, I should manually insert "Wait 25" between any steps that need some lag, or "automate it locally" in helper functions, but not "automate it globally" by interleaving.
 
-copy :: (MonadAction m) => m String
+-- | press "C-c", wait, and then return the clipboard contents 
+copy :: (MonadWorkflow m) => m String
 copy = do
  sendKeyChord [CommandMod] CKey
  delay 100 -- TODO how long does it need to wait?
  getClipboard
 
-paste :: (MonadAction m) => m ()
+paste :: (MonadWorkflow m) => m ()
 paste = do
  sendKeyChord [CommandMod] VKey
 
-google :: (MonadAction m) => String -> m ()
+-- | google a query. properly encodes the url. 
+google :: (MonadWorkflow m) => String -> m ()
 google (BS.pack -> query) = openURL (BS.unpack $ "https://www.google.com/search" <> renderQuery True [("q", Just query)])
 
 -- TODO
--- instance convert KeyChord Actions
--- instance convert MouseClick Actions
+-- instance convert KeyChord Workflow
+-- instance convert MouseClick Workflow
 
--- doubleClick :: AMonadAction_
+-- doubleClick :: AMonadWorkflow_
 -- doubleClick = clickMouse [] LeftButton 2
 
--- rightClick :: AMonadAction_
+-- rightClick :: AMonadWorkflow_
 -- rightClick = clickMouse [] RightButton 1
 

@@ -7,15 +7,15 @@ import Foreign.C.Types             (CULLong (..), CUShort (..))
 -- import Data.Word (Word32)
 
 
-foreign import ccall safe "objc_actor.h currentApplicationPath" objc_currentApplicationPath
+foreign import ccall safe "objc_workflow.h currentApplicationPath" objc_currentApplicationPath
  :: IO CString
 
-foreign import ccall safe "objc_actor.h pressKey"               objc_pressKey
+foreign import ccall safe "objc_workflow.h pressKey"               objc_pressKey
  :: CGEventFlags
  -> CGKeyCode
  -> IO ()
 
--- foreign import ccall safe "objc_actor.h clickMouse"             objc_clickMouse
+-- foreign import ccall safe "objc_workflow.h clickMouse"             objc_clickMouse
 --  :: CGEventType
 --  -> CGEventFlags
 --  -> CGEventType
@@ -23,18 +23,18 @@ foreign import ccall safe "objc_actor.h pressKey"               objc_pressKey
 --  -> Word32
 --  -> IO ()
 
-foreign import ccall safe "objc_actor.h getClipboard"           objc_getClipboard
+foreign import ccall safe "objc_workflow.h getClipboard"           objc_getClipboard
  :: IO CString
 
-foreign import ccall safe "objc_actor.h setClipboard"           objc_setClipboard
+foreign import ccall safe "objc_workflow.h setClipboard"           objc_setClipboard
  :: CString
  -> IO ()
 
-foreign import ccall safe "objc_actor.h openURL"                objc_openURL
+foreign import ccall safe "objc_workflow.h openURL"                objc_openURL
  :: CString
  -> IO ()
 
-foreign import ccall safe "objc_actor.h openApplication"        objc_openApplication
+foreign import ccall safe "objc_workflow.h openApplication"        objc_openApplication
  :: CString
  -> IO ()
 

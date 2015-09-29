@@ -7,7 +7,7 @@ import Data.BitVector                  hiding (foldl)
 import Foreign.C.Types
 
 
-{- | Marshall the bit'mask'.
+{- | Marshall the bitmask.
 
 relates Haskell types with Objective-C types:
 

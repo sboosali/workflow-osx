@@ -13,12 +13,12 @@ import Data.List                      (intercalate)
 import Data.Monoid                    ((<>))
 
 
-runActions :: Actions a -> IO a
-runActions = iterM $ \case
+runWorkflow :: Workflow a -> IO a
+runWorkflow = iterM $ \case
  -- iterM :: (Monad m, Functor f) => (f (m a) -> m a) -> Free f a -> m a
 
  SendKeyChord    flags key k      -> ObjC.pressKey flags key >> k
- SendText        s k              -> runActions (sendTextAsKeypresses s) >> k
+ SendText        s k              -> runWorkflow (sendTextAsKeypresses s) >> k
  -- terminates because sendTextAsKeypresses is exclusively a sequence of SendKeyChord'es
 
  -- TODO SendMouseClick  flags n button k -> ObjC.clickMouse flags n button >> k
@@ -34,18 +34,18 @@ runActions = iterM $ \case
  -- 1,000 µs is 1ms
 
 -- | returns a sequence of 'SendKeyChord'es.
-sendTextAsKeypresses :: String -> Actions ()
+sendTextAsKeypresses :: String -> Workflow ()
 sendTextAsKeypresses
  = traverse_ (\(modifiers, key) -> liftF $ SendKeyChord modifiers key ())
  . concatMap char2keypress
- -- liftF :: ActionF () -> Free ActionF ()
+ -- liftF :: WorkflowF () -> Free WorkflowF ()
 
-runActionsWithDelay :: Int -> Actions a -> IO a
-runActionsWithDelay t = iterM $ \case
+runWorkflowWithDelay :: Int -> Workflow a -> IO a
+runWorkflowWithDelay t = iterM $ \case
  -- iterM :: (Monad m, Functor f) => (f (m a) -> m a) -> Free f a -> m a
 
  SendKeyChord    flags key k      -> threadDelay (t*1000) >> ObjC.pressKey flags key             >> k
- SendText        s k              -> runActions (sendTextAsKeypressesWithDelay t s)              >> k
+ SendText        s k              -> runWorkflow (sendTextAsKeypressesWithDelay t s)              >> k
 
  GetClipboard    f                -> threadDelay (t*1000) >> ObjC.getClipboard                   >>= f
  SetClipboard    s k              -> threadDelay (t*1000) >> ObjC.setClipboard s                 >> k
@@ -58,20 +58,20 @@ runActionsWithDelay t = iterM $ \case
  -- 1,000 µs is 1ms
 
 -- | returns a sequence of 'SendKeyChord'es.
-sendTextAsKeypressesWithDelay :: Int -> String -> Actions ()
+sendTextAsKeypressesWithDelay :: Int -> String -> Workflow ()
 sendTextAsKeypressesWithDelay t
  = traverse_ (\(modifiers, key) -> do
     liftF $ Delay t                    ()
     liftF $ SendKeyChord modifiers key ())
  . concatMap char2keypress
- -- liftF :: ActionF () -> Free ActionF ()
+ -- liftF :: WorkflowF () -> Free WorkflowF ()
 
-{- | shows the "static" data flow of some 'Actions', by showing its primitive operations, in @do-notation@.
+{- | shows the "static" data flow of some 'Workflow', by showing its primitive operations, in @do-notation@.
 
 e.g.
 
 >>> :{
-putStrLn . showActions $ do
+putStrLn . showWorkflow $ do
  sendKeyChord [Command, Shift] BKey
  delay 1000
  sendKeyChord [Command] DownArrowKey
@@ -101,24 +101,24 @@ and they could have been named anything)
 basically, the monadically-bound variable @x1@ is shown as if it were literally @"{x1}"@ (rather than, the current clipboard contents). a more complicated alternative could be to purely model the state: e.g. a clipboard, with 'SetClipboard' and 'GetClipboard' working together, etc.).
 
 -}
-showActions :: (Show x) => Actions x -> String
-showActions as = "do\n" <> evalState (showActions_ as) 1
+showWorkflow :: (Show x) => Workflow x -> String
+showWorkflow as = "do\n" <> evalState (showWorkflow_ as) 1
 
  where
- showActions_ :: (Show x) => Actions x -> State Gensym String
- showActions_ (Pure x) = return $ " return " <> show x <> "\n"
- showActions_ (Free a) = showAction_ a
+ showWorkflow_ :: (Show x) => Workflow x -> State Gensym String
+ showWorkflow_ (Pure x) = return $ " return " <> show x <> "\n"
+ showWorkflow_ (Free a) = showWorkflowF a
 
- showAction_ :: (Show x) => ActionF (Actions x) -> State Gensym String
- showAction_ = \case
-  SendKeyChord    flags key k -> ((" sendKeyChord "    <> showArgs [show flags, show key]) <>)       <$> showActions_ k
-  -- TODO SendMouseClick  flags n b k -> ((" sendMouseClick "  <> showArgs [show flags, show n, show b]) <>) <$> showActions_ k
-  SendText        s k         -> ((" sendText "        <> showArgs [show s]) <>)                     <$> showActions_ k
+ showWorkflowF :: (Show x) => WorkflowF (Workflow x) -> State Gensym String
+ showWorkflowF = \case
+  SendKeyChord    flags key k -> ((" sendKeyChord "    <> showArgs [show flags, show key]) <>)       <$> showWorkflow_ k
+  -- TODO SendMouseClick  flags n b k -> ((" sendMouseClick "  <> showArgs [show flags, show n, show b]) <>) <$> showWorkflow_ k
+  SendText        s k         -> ((" sendText "        <> showArgs [show s]) <>)                     <$> showWorkflow_ k
 
-  SetClipboard    s k         -> ((" setClipboard "    <> showArgs [show s]) <>)                     <$> showActions_ k
-  OpenApplication app k       -> ((" openApplication " <> showArgs [show app]) <>)                   <$> showActions_ k
-  OpenURL         url k       -> ((" openURL "         <> showArgs [show url]) <>)                   <$> showActions_ k
-  Delay           t k         -> ((" delay "           <> showArgs [show t]) <>)                     <$> showActions_ k
+  SetClipboard    s k         -> ((" setClipboard "    <> showArgs [show s]) <>)                     <$> showWorkflow_ k
+  OpenApplication app k       -> ((" openApplication " <> showArgs [show app]) <>)                   <$> showWorkflow_ k
+  OpenURL         url k       -> ((" openURL "         <> showArgs [show url]) <>)                   <$> showWorkflow_ k
+  Delay           t k         -> ((" delay "           <> showArgs [show t]) <>)                     <$> showWorkflow_ k
 
  -- TODO distinguish between strings and variables to avoid:
  -- x2 <- getClipboard
@@ -126,12 +126,12 @@ showActions as = "do\n" <> evalState (showActions_ as) 1
 
   GetClipboard f -> do
    x <- gensym
-   rest <- showActions_ (f ("{"<>x<>"}"))
+   rest <- showWorkflow_ (f ("{"<>x<>"}"))
    return $ " " <> x <> " <- getClipboard" <> showArgs [] <> rest
 
   CurrentApplication f -> do
    x <- gensym
-   rest <- showActions_ (f ("{"<>x<>"}"))
+   rest <- showWorkflow_ (f ("{"<>x<>"}"))
    return $ " " <> x <> " <- currentApplication" <> showArgs [] <> rest
 
  showArgs :: [String] -> String
@@ -144,3 +144,4 @@ gensym = do
  i <- get
  put $ i + 1
  return $ "x" <> show i
+

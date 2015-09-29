@@ -16,7 +16,7 @@ author: Spiros Boosalis
 tested-with: GHC ==7.10.1
 extra-source-files:
     README.md
-    cbits/objc_actor.h
+    cbits/objc_workflow.h
     cbits/Makefile
 
 source-repository head
@@ -65,11 +65,11 @@ library
     ld-options: -ObjC
     frameworks: Cocoa
     c-sources:
-        cbits/objc_actor.m
+        cbits/objc_workflow.m
     includes:
-        cbits/objc_actor.h
+        cbits/objc_workflow.h
     install-includes:
-        cbits/objc_actor.h
+        cbits/objc_workflow.h
     include-dirs: cbits
 
 executable example

@@ -9,7 +9,7 @@ import Foreign.C.Types
 
 
 -- | a monad constraint for "workflow effects", (just like @MonadState@ is a monad constraint for "state effects") can use in any monad transformer stack that handles them.
-type MonadAction = MonadFree ActionF
+type MonadWorkflow = MonadFree WorkflowF
 
 -- {- | for convenience. 
 -- without loss of generality (I don't think) when declaring simple monadic effects (like Kleisli arrows). 
@@ -17,23 +17,23 @@ type MonadAction = MonadFree ActionF
 -- e.g.
 
 -- @
--- getClipboard :: 'AMonadAction'      String  -- generalized
--- getClipboard :: ('MonadAction' m) => m String  -- generalized
--- getClipboard :: Free 'ActionF'         String  -- specialized
+-- getClipboard :: 'AMonadWorkflow'      String  -- generalized
+-- getClipboard :: ('MonadWorkflow' m) => m String  -- generalized
+-- getClipboard :: Free 'WorkflowF'         String  -- specialized
 -- @
 
 -- -}
--- type AMonadAction a = forall m. (MonadAction m) => m a
+-- type AMonadWorkflow a = forall m. (MonadWorkflow m) => m a
 
--- type AMonadAction_ = forall m. (MonadAction m) => m ()
+-- type AMonadWorkflow_ = forall m. (MonadWorkflow m) => m ()
 
 -- | a platform-agnostic free monad, which can be executed by platform-specific bindings.
-type Actions = Free ActionF
+type Workflow = Free WorkflowF
 
-type Actions_ = Actions ()
+type Workflow_ = Workflow ()
 
--- | the "Action Functor".
-data ActionF k
+-- | the "Workflow Functor".
+data WorkflowF k
  = SendKeyChord    [Modifier] Key                   k
  | SendText        String                           k -- ^ a logical grouping for debugging and optimizing
  --TODO | SendMouseClick  [Modifier] Int MouseButton  k
@@ -55,7 +55,7 @@ data ActionF k
  deriving (Functor)
  -- deriving (Functor,Data)
 
--- data ActionF mod key k  TODO platform-specific keyboards 
+-- data WorkflowF mod key k  TODO platform-specific keyboards 
 --  = SendKeyChord    [mod] key      k 
 -- TODO convert between keyboards, like Alt on Windows/Linux being Command on OSX 
 
@@ -72,7 +72,7 @@ type Time = Int
 -- newtype Time = Time String  deriving (Show,Eq,Ord,Num)
 -- units package
 
--- class IsString TODO needs Free ActionF, which must be lifted, which isn't better than insert 
+-- class IsString TODO needs Free WorkflowF, which must be lifted, which isn't better than insert 
 
 
 {- | relates a Haskell type with a Objective-C type:

@@ -1,27 +1,28 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures -fno-warn-unused-binds -fno-warn-unused-matches #-}
+-- | some example workflows you can derive from the primitives in 'Workflow'. (see the source)
 module Workflow.OSX.Example where
 import Workflow.OSX.DSL
 import Workflow.OSX.Execute
 import Workflow.OSX.Types
 
 import Control.Monad                 (replicateM_)
-import Data.Monoid                   ((<>))
 
 
 main = do
- attemptActions testDerived
+ attemptWorkflow testDerived
+ -- attemptWorkflow testChrome
 
-attemptActions a = do
+attemptWorkflow a = do
  putStrLn ""
- putStrLn $ showActions a
- runActions a
+ putStrLn $ showWorkflow a
+ runWorkflow a
 
 testDerived = do
  _ <- copy
  delay 100
  paste
 
-testDSL :: Actions ClipboardText
+testDSL :: Workflow ClipboardText
 testDSL = do
 
  -- delay 30
@@ -31,7 +32,7 @@ testDSL = do
 
  app <- currentApplication
  s <- getClipboard
- openURL $ "https://www.google.com/search?q=" <> s
+ google s
  setClipboard app
  getClipboard
 
@@ -48,9 +49,9 @@ forWord = do
 
 -- keyboard shortcuts don't need lag between each Keypress (hence
 -- 'replicateM_', without 'interleave $ delay 25000'). only
--- interaction needs lag (e.g. a mini-buffer pop-up).
+-- interworkflow needs lag (e.g. a mini-buffer pop-up).
 -- tested in Chrome.
-testChrome :: Actions ()
+testChrome :: Workflow ()
 testChrome = do
  delay 5000
  replicateM_ 10 forWord
