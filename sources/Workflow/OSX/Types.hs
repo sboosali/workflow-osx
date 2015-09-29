@@ -110,22 +110,6 @@ type CGEventFlags  = CULLong
 -- data MouseButton = LeftButton | MiddleButton | RightButton
 --  deriving (Show,Eq,Ord,Enum,Bounded)
 
---TODO | a (pseudo)-refinement type.
--- newtype Positive = Positive { getPositive :: Int } deriving (Show,Eq,Ord,Data,Generic,Num) -- TODO or just use Natural? 
-
--- -- | smart constructor for 'Positive'.
--- newPositive :: Int -> Possibly Positive
--- newPositive i = if i >= 1
---  then return (Positive i)
---  else failure 'newPositive
-
-
--- {- |
-
--- @Press [Command, Shift] AKey@ is easy to read, and
--- @Press []@ is natural to partially apply
-
--- -}
 -- data KeyChord = KeyChord [Modifier] Key
 --  deriving (Show,Eq,Ord)
 
@@ -146,7 +130,7 @@ the escape key is "pressed", not "held", it seems.
 @alt@ is 'Option'.
 
 -}
-data Modifier = Control | CommandMod | Shift | Option | Function
+data Modifier = ControlModifier | CommandModifier | ShiftModifier | OptionModifier | FunctionModifier
  -- Command is qualified to not conflict with Commands.Command.Types
  deriving (Show,Eq,Ord,Bounded,Enum,Data,Generic)
 -- data Modifier = ControlMod | CommandMod | ShiftMod | OptionMod | FunctionMod
@@ -291,7 +275,7 @@ digit2keypress k = failed $ "digit2keypress: digits must be between zero and nin
 {- | the keypress that would insert the character into the application.
 
 >>> char2keypress '@' :: Maybe KeyChord
-Just ([Shift], TwoKey)
+Just ([ShiftModifier], TwoKey)
 
 some characters cannot be represented as keypresses, like some non-printable characters
 (in arbitrary applications, not just the terminal emulator):
@@ -299,107 +283,107 @@ some characters cannot be represented as keypresses, like some non-printable cha
 >>> char2keypress '\0' :: Maybe KeyChord
 Nothing
 
-prop> case char2keypress c of {  Just ([],_) -> True;  Just ([Shift],_) -> True;  Nothing -> True;  _ -> False  }
+prop> case char2keypress c of {  Just ([],_) -> True;  Just ([ShiftModifier],_) -> True;  Nothing -> True;  _ -> False  }
 
 -}
 char2keypress :: (MonadThrow m) => Char -> m KeyChord -- ((,) [Modifier] Key)
 
 char2keypress 'a'  = return $ (,) [     ] AKey
-char2keypress 'A'  = return $ (,) [Shift] AKey
+char2keypress 'A'  = return $ (,) [ShiftModifier] AKey
 char2keypress 'b'  = return $ (,) [     ] BKey
-char2keypress 'B'  = return $ (,) [Shift] BKey
+char2keypress 'B'  = return $ (,) [ShiftModifier] BKey
 char2keypress 'c'  = return $ (,) [     ] CKey
-char2keypress 'C'  = return $ (,) [Shift] CKey
+char2keypress 'C'  = return $ (,) [ShiftModifier] CKey
 char2keypress 'd'  = return $ (,) [     ] DKey
-char2keypress 'D'  = return $ (,) [Shift] DKey
+char2keypress 'D'  = return $ (,) [ShiftModifier] DKey
 char2keypress 'e'  = return $ (,) [     ] EKey
-char2keypress 'E'  = return $ (,) [Shift] EKey
+char2keypress 'E'  = return $ (,) [ShiftModifier] EKey
 char2keypress 'f'  = return $ (,) [     ] FKey
-char2keypress 'F'  = return $ (,) [Shift] FKey
+char2keypress 'F'  = return $ (,) [ShiftModifier] FKey
 char2keypress 'g'  = return $ (,) [     ] GKey
-char2keypress 'G'  = return $ (,) [Shift] GKey
+char2keypress 'G'  = return $ (,) [ShiftModifier] GKey
 char2keypress 'h'  = return $ (,) [     ] HKey
-char2keypress 'H'  = return $ (,) [Shift] HKey
+char2keypress 'H'  = return $ (,) [ShiftModifier] HKey
 char2keypress 'i'  = return $ (,) [     ] IKey
-char2keypress 'I'  = return $ (,) [Shift] IKey
+char2keypress 'I'  = return $ (,) [ShiftModifier] IKey
 char2keypress 'j'  = return $ (,) [     ] JKey
-char2keypress 'J'  = return $ (,) [Shift] JKey
+char2keypress 'J'  = return $ (,) [ShiftModifier] JKey
 char2keypress 'k'  = return $ (,) [     ] KKey
-char2keypress 'K'  = return $ (,) [Shift] KKey
+char2keypress 'K'  = return $ (,) [ShiftModifier] KKey
 char2keypress 'l'  = return $ (,) [     ] LKey
-char2keypress 'L'  = return $ (,) [Shift] LKey
+char2keypress 'L'  = return $ (,) [ShiftModifier] LKey
 char2keypress 'm'  = return $ (,) [     ] MKey
-char2keypress 'M'  = return $ (,) [Shift] MKey
+char2keypress 'M'  = return $ (,) [ShiftModifier] MKey
 char2keypress 'n'  = return $ (,) [     ] NKey
-char2keypress 'N'  = return $ (,) [Shift] NKey
+char2keypress 'N'  = return $ (,) [ShiftModifier] NKey
 char2keypress 'o'  = return $ (,) [     ] OKey
-char2keypress 'O'  = return $ (,) [Shift] OKey
+char2keypress 'O'  = return $ (,) [ShiftModifier] OKey
 char2keypress 'p'  = return $ (,) [     ] PKey
-char2keypress 'P'  = return $ (,) [Shift] PKey
+char2keypress 'P'  = return $ (,) [ShiftModifier] PKey
 char2keypress 'q'  = return $ (,) [     ] QKey
-char2keypress 'Q'  = return $ (,) [Shift] QKey
+char2keypress 'Q'  = return $ (,) [ShiftModifier] QKey
 char2keypress 'r'  = return $ (,) [     ] RKey
-char2keypress 'R'  = return $ (,) [Shift] RKey
+char2keypress 'R'  = return $ (,) [ShiftModifier] RKey
 char2keypress 's'  = return $ (,) [     ] SKey
-char2keypress 'S'  = return $ (,) [Shift] SKey
+char2keypress 'S'  = return $ (,) [ShiftModifier] SKey
 char2keypress 't'  = return $ (,) [     ] TKey
-char2keypress 'T'  = return $ (,) [Shift] TKey
+char2keypress 'T'  = return $ (,) [ShiftModifier] TKey
 char2keypress 'u'  = return $ (,) [     ] UKey
-char2keypress 'U'  = return $ (,) [Shift] UKey
+char2keypress 'U'  = return $ (,) [ShiftModifier] UKey
 char2keypress 'v'  = return $ (,) [     ] VKey
-char2keypress 'V'  = return $ (,) [Shift] VKey
+char2keypress 'V'  = return $ (,) [ShiftModifier] VKey
 char2keypress 'w'  = return $ (,) [     ] WKey
-char2keypress 'W'  = return $ (,) [Shift] WKey
+char2keypress 'W'  = return $ (,) [ShiftModifier] WKey
 char2keypress 'x'  = return $ (,) [     ] XKey
-char2keypress 'X'  = return $ (,) [Shift] XKey
+char2keypress 'X'  = return $ (,) [ShiftModifier] XKey
 char2keypress 'y'  = return $ (,) [     ] YKey
-char2keypress 'Y'  = return $ (,) [Shift] YKey
+char2keypress 'Y'  = return $ (,) [ShiftModifier] YKey
 char2keypress 'z'  = return $ (,) [     ] ZKey
-char2keypress 'Z'  = return $ (,) [Shift] ZKey
+char2keypress 'Z'  = return $ (,) [ShiftModifier] ZKey
 
 char2keypress '0'  = return $ (,) [     ] ZeroKey
-char2keypress ')'  = return $ (,) [Shift] ZeroKey
+char2keypress ')'  = return $ (,) [ShiftModifier] ZeroKey
 char2keypress '1'  = return $ (,) [     ] OneKey
-char2keypress '!'  = return $ (,) [Shift] OneKey
+char2keypress '!'  = return $ (,) [ShiftModifier] OneKey
 char2keypress '2'  = return $ (,) [     ] TwoKey
-char2keypress '@'  = return $ (,) [Shift] TwoKey
+char2keypress '@'  = return $ (,) [ShiftModifier] TwoKey
 char2keypress '3'  = return $ (,) [     ] ThreeKey
-char2keypress '#'  = return $ (,) [Shift] ThreeKey
+char2keypress '#'  = return $ (,) [ShiftModifier] ThreeKey
 char2keypress '4'  = return $ (,) [     ] FourKey
-char2keypress '$'  = return $ (,) [Shift] FourKey
+char2keypress '$'  = return $ (,) [ShiftModifier] FourKey
 char2keypress '5'  = return $ (,) [     ] FiveKey
-char2keypress '%'  = return $ (,) [Shift] FiveKey
+char2keypress '%'  = return $ (,) [ShiftModifier] FiveKey
 char2keypress '6'  = return $ (,) [     ] SixKey
-char2keypress '^'  = return $ (,) [Shift] SixKey
+char2keypress '^'  = return $ (,) [ShiftModifier] SixKey
 char2keypress '7'  = return $ (,) [     ] SevenKey
-char2keypress '&'  = return $ (,) [Shift] SevenKey
+char2keypress '&'  = return $ (,) [ShiftModifier] SevenKey
 char2keypress '8'  = return $ (,) [     ] EightKey
-char2keypress '*'  = return $ (,) [Shift] EightKey
+char2keypress '*'  = return $ (,) [ShiftModifier] EightKey
 char2keypress '9'  = return $ (,) [     ] NineKey
-char2keypress '('  = return $ (,) [Shift] NineKey
+char2keypress '('  = return $ (,) [ShiftModifier] NineKey
 
 char2keypress '`'  = return $ (,) [     ] GraveKey
-char2keypress '~'  = return $ (,) [Shift] GraveKey
+char2keypress '~'  = return $ (,) [ShiftModifier] GraveKey
 char2keypress '-'  = return $ (,) [     ] MinusKey
-char2keypress '_'  = return $ (,) [Shift] MinusKey
+char2keypress '_'  = return $ (,) [ShiftModifier] MinusKey
 char2keypress '='  = return $ (,) [     ] EqualKey
-char2keypress '+'  = return $ (,) [Shift] EqualKey
+char2keypress '+'  = return $ (,) [ShiftModifier] EqualKey
 char2keypress '['  = return $ (,) [     ] LeftBracketKey
-char2keypress '{'  = return $ (,) [Shift] LeftBracketKey
+char2keypress '{'  = return $ (,) [ShiftModifier] LeftBracketKey
 char2keypress ']'  = return $ (,) [     ] RightBracketKey
-char2keypress '}'  = return $ (,) [Shift] RightBracketKey
+char2keypress '}'  = return $ (,) [ShiftModifier] RightBracketKey
 char2keypress '\\' = return $ (,) [     ] BackslashKey
-char2keypress '|'  = return $ (,) [Shift] BackslashKey
+char2keypress '|'  = return $ (,) [ShiftModifier] BackslashKey
 char2keypress ';'  = return $ (,) [     ] SemicolonKey
-char2keypress ':'  = return $ (,) [Shift] SemicolonKey
+char2keypress ':'  = return $ (,) [ShiftModifier] SemicolonKey
 char2keypress '\'' = return $ (,) [     ] QuoteKey
-char2keypress '"'  = return $ (,) [Shift] QuoteKey
+char2keypress '"'  = return $ (,) [ShiftModifier] QuoteKey
 char2keypress ','  = return $ (,) [     ] CommaKey
-char2keypress '<'  = return $ (,) [Shift] CommaKey
+char2keypress '<'  = return $ (,) [ShiftModifier] CommaKey
 char2keypress '.'  = return $ (,) [     ] PeriodKey
-char2keypress '>'  = return $ (,) [Shift] PeriodKey
+char2keypress '>'  = return $ (,) [ShiftModifier] PeriodKey
 char2keypress '/'  = return $ (,) [     ] SlashKey
-char2keypress '?'  = return $ (,) [Shift] SlashKey
+char2keypress '?'  = return $ (,) [ShiftModifier] SlashKey
 
 char2keypress ' '  = return $ (,) [     ] SpaceKey
 char2keypress '\t' = return $ (,) [     ] TabKey
@@ -410,7 +394,7 @@ char2keypress c = failed $ "char2keypress: un-pressable Char: " <> show c
 
 {- | the character that represents the keypress:
 
->>> keypress2char ([Shift], TwoKey) :: Maybe Char
+>>> keypress2char ([ShiftModifier], TwoKey) :: Maybe Char
 Just '@'
 
 some keypresses cannot be represented as characters, like keyboard shortcuts:
@@ -427,101 +411,101 @@ TODO replace true with redo test
 keypress2char :: (MonadThrow m) => KeyChord -> m Char -- ((,) [Modifier] Key)
 
 keypress2char ((,) [     ] AKey)            = return $ 'a'
-keypress2char ((,) [Shift] AKey)            = return $ 'A'
+keypress2char ((,) [ShiftModifier] AKey)            = return $ 'A'
 keypress2char ((,) [     ] BKey)            = return $ 'b'
-keypress2char ((,) [Shift] BKey)            = return $ 'B'
+keypress2char ((,) [ShiftModifier] BKey)            = return $ 'B'
 keypress2char ((,) [     ] CKey)            = return $ 'c'
-keypress2char ((,) [Shift] CKey)            = return $ 'C'
+keypress2char ((,) [ShiftModifier] CKey)            = return $ 'C'
 keypress2char ((,) [     ] DKey)            = return $ 'd'
-keypress2char ((,) [Shift] DKey)            = return $ 'D'
+keypress2char ((,) [ShiftModifier] DKey)            = return $ 'D'
 keypress2char ((,) [     ] EKey)            = return $ 'e'
-keypress2char ((,) [Shift] EKey)            = return $ 'E'
+keypress2char ((,) [ShiftModifier] EKey)            = return $ 'E'
 keypress2char ((,) [     ] FKey)            = return $ 'f'
-keypress2char ((,) [Shift] FKey)            = return $ 'F'
+keypress2char ((,) [ShiftModifier] FKey)            = return $ 'F'
 keypress2char ((,) [     ] GKey)            = return $ 'g'
-keypress2char ((,) [Shift] GKey)            = return $ 'G'
+keypress2char ((,) [ShiftModifier] GKey)            = return $ 'G'
 keypress2char ((,) [     ] HKey)            = return $ 'h'
-keypress2char ((,) [Shift] HKey)            = return $ 'H'
+keypress2char ((,) [ShiftModifier] HKey)            = return $ 'H'
 keypress2char ((,) [     ] IKey)            = return $ 'i'
-keypress2char ((,) [Shift] IKey)            = return $ 'I'
+keypress2char ((,) [ShiftModifier] IKey)            = return $ 'I'
 keypress2char ((,) [     ] JKey)            = return $ 'j'
-keypress2char ((,) [Shift] JKey)            = return $ 'J'
+keypress2char ((,) [ShiftModifier] JKey)            = return $ 'J'
 keypress2char ((,) [     ] KKey)            = return $ 'k'
-keypress2char ((,) [Shift] KKey)            = return $ 'K'
+keypress2char ((,) [ShiftModifier] KKey)            = return $ 'K'
 keypress2char ((,) [     ] LKey)            = return $ 'l'
-keypress2char ((,) [Shift] LKey)            = return $ 'L'
+keypress2char ((,) [ShiftModifier] LKey)            = return $ 'L'
 keypress2char ((,) [     ] MKey)            = return $ 'm'
-keypress2char ((,) [Shift] MKey)            = return $ 'M'
+keypress2char ((,) [ShiftModifier] MKey)            = return $ 'M'
 keypress2char ((,) [     ] NKey)            = return $ 'n'
-keypress2char ((,) [Shift] NKey)            = return $ 'N'
+keypress2char ((,) [ShiftModifier] NKey)            = return $ 'N'
 keypress2char ((,) [     ] OKey)            = return $ 'o'
-keypress2char ((,) [Shift] OKey)            = return $ 'O'
+keypress2char ((,) [ShiftModifier] OKey)            = return $ 'O'
 keypress2char ((,) [     ] PKey)            = return $ 'p'
-keypress2char ((,) [Shift] PKey)            = return $ 'P'
+keypress2char ((,) [ShiftModifier] PKey)            = return $ 'P'
 keypress2char ((,) [     ] QKey)            = return $ 'q'
-keypress2char ((,) [Shift] QKey)            = return $ 'Q'
+keypress2char ((,) [ShiftModifier] QKey)            = return $ 'Q'
 keypress2char ((,) [     ] RKey)            = return $ 'r'
-keypress2char ((,) [Shift] RKey)            = return $ 'R'
+keypress2char ((,) [ShiftModifier] RKey)            = return $ 'R'
 keypress2char ((,) [     ] SKey)            = return $ 's'
-keypress2char ((,) [Shift] SKey)            = return $ 'S'
+keypress2char ((,) [ShiftModifier] SKey)            = return $ 'S'
 keypress2char ((,) [     ] TKey)            = return $ 't'
-keypress2char ((,) [Shift] TKey)            = return $ 'T'
+keypress2char ((,) [ShiftModifier] TKey)            = return $ 'T'
 keypress2char ((,) [     ] UKey)            = return $ 'u'
-keypress2char ((,) [Shift] UKey)            = return $ 'U'
+keypress2char ((,) [ShiftModifier] UKey)            = return $ 'U'
 keypress2char ((,) [     ] VKey)            = return $ 'v'
-keypress2char ((,) [Shift] VKey)            = return $ 'V'
+keypress2char ((,) [ShiftModifier] VKey)            = return $ 'V'
 keypress2char ((,) [     ] WKey)            = return $ 'w'
-keypress2char ((,) [Shift] WKey)            = return $ 'W'
+keypress2char ((,) [ShiftModifier] WKey)            = return $ 'W'
 keypress2char ((,) [     ] XKey)            = return $ 'x'
-keypress2char ((,) [Shift] XKey)            = return $ 'X'
+keypress2char ((,) [ShiftModifier] XKey)            = return $ 'X'
 keypress2char ((,) [     ] YKey)            = return $ 'y'
-keypress2char ((,) [Shift] YKey)            = return $ 'Y'
+keypress2char ((,) [ShiftModifier] YKey)            = return $ 'Y'
 keypress2char ((,) [     ] ZKey)            = return $ 'z'
-keypress2char ((,) [Shift] ZKey)            = return $ 'Z'
+keypress2char ((,) [ShiftModifier] ZKey)            = return $ 'Z'
 
 keypress2char ((,) [     ] ZeroKey)         = return $ '0'
-keypress2char ((,) [Shift] ZeroKey)         = return $ ')'
+keypress2char ((,) [ShiftModifier] ZeroKey)         = return $ ')'
 keypress2char ((,) [     ] OneKey)          = return $ '1'
-keypress2char ((,) [Shift] OneKey)          = return $ '!'
+keypress2char ((,) [ShiftModifier] OneKey)          = return $ '!'
 keypress2char ((,) [     ] TwoKey)          = return $ '2'
-keypress2char ((,) [Shift] TwoKey)          = return $ '@'
+keypress2char ((,) [ShiftModifier] TwoKey)          = return $ '@'
 keypress2char ((,) [     ] ThreeKey)        = return $ '3'
-keypress2char ((,) [Shift] ThreeKey)        = return $ '#'
+keypress2char ((,) [ShiftModifier] ThreeKey)        = return $ '#'
 keypress2char ((,) [     ] FourKey)         = return $ '4'
-keypress2char ((,) [Shift] FourKey)         = return $ '$'
+keypress2char ((,) [ShiftModifier] FourKey)         = return $ '$'
 keypress2char ((,) [     ] FiveKey)         = return $ '5'
-keypress2char ((,) [Shift] FiveKey)         = return $ '%'
+keypress2char ((,) [ShiftModifier] FiveKey)         = return $ '%'
 keypress2char ((,) [     ] SixKey)          = return $ '6'
-keypress2char ((,) [Shift] SixKey)          = return $ '^'
+keypress2char ((,) [ShiftModifier] SixKey)          = return $ '^'
 keypress2char ((,) [     ] SevenKey)        = return $ '7'
-keypress2char ((,) [Shift] SevenKey)        = return $ '&'
+keypress2char ((,) [ShiftModifier] SevenKey)        = return $ '&'
 keypress2char ((,) [     ] EightKey)        = return $ '8'
-keypress2char ((,) [Shift] EightKey)        = return $ '*'
+keypress2char ((,) [ShiftModifier] EightKey)        = return $ '*'
 keypress2char ((,) [     ] NineKey)         = return $ '9'
-keypress2char ((,) [Shift] NineKey)         = return $ '('
+keypress2char ((,) [ShiftModifier] NineKey)         = return $ '('
 
 keypress2char ((,) [     ] GraveKey)        = return $ '`'
-keypress2char ((,) [Shift] GraveKey)        = return $ '~'
+keypress2char ((,) [ShiftModifier] GraveKey)        = return $ '~'
 keypress2char ((,) [     ] MinusKey)        = return $ '-'
-keypress2char ((,) [Shift] MinusKey)        = return $ '_'
+keypress2char ((,) [ShiftModifier] MinusKey)        = return $ '_'
 keypress2char ((,) [     ] EqualKey)        = return $ '='
-keypress2char ((,) [Shift] EqualKey)        = return $ '+'
+keypress2char ((,) [ShiftModifier] EqualKey)        = return $ '+'
 keypress2char ((,) [     ] LeftBracketKey)  = return $ '['
-keypress2char ((,) [Shift] LeftBracketKey)  = return $ '{'
+keypress2char ((,) [ShiftModifier] LeftBracketKey)  = return $ '{'
 keypress2char ((,) [     ] RightBracketKey) = return $ ']'
-keypress2char ((,) [Shift] RightBracketKey) = return $ '}'
+keypress2char ((,) [ShiftModifier] RightBracketKey) = return $ '}'
 keypress2char ((,) [     ] BackslashKey)    = return $ '\\'
-keypress2char ((,) [Shift] BackslashKey)    = return $ '|'
+keypress2char ((,) [ShiftModifier] BackslashKey)    = return $ '|'
 keypress2char ((,) [     ] SemicolonKey)    = return $ ';'
-keypress2char ((,) [Shift] SemicolonKey)    = return $ ':'
+keypress2char ((,) [ShiftModifier] SemicolonKey)    = return $ ':'
 keypress2char ((,) [     ] QuoteKey)        = return $ '\''
-keypress2char ((,) [Shift] QuoteKey)        = return $ '"'
+keypress2char ((,) [ShiftModifier] QuoteKey)        = return $ '"'
 keypress2char ((,) [     ] CommaKey)        = return $ ','
-keypress2char ((,) [Shift] CommaKey)        = return $ '<'
+keypress2char ((,) [ShiftModifier] CommaKey)        = return $ '<'
 keypress2char ((,) [     ] PeriodKey)       = return $ '.'
-keypress2char ((,) [Shift] PeriodKey)       = return $ '>'
+keypress2char ((,) [ShiftModifier] PeriodKey)       = return $ '>'
 keypress2char ((,) [     ] SlashKey)        = return $ '/'
-keypress2char ((,) [Shift] SlashKey)        = return $ '?'
+keypress2char ((,) [ShiftModifier] SlashKey)        = return $ '?'
 
 keypress2char ((,) [     ] SpaceKey)        = return $ ' '
 keypress2char ((,) [     ] TabKey)          = return $ '\t'

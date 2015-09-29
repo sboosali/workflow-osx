@@ -33,13 +33,13 @@ insert = sendText
 -- | press "C-c", wait, and then return the clipboard contents 
 copy :: (MonadWorkflow m) => m String
 copy = do
- sendKeyChord [CommandMod] CKey
+ sendKeyChord [CommandModifier] CKey
  delay 100 -- TODO how long does it need to wait?
  getClipboard
 
 paste :: (MonadWorkflow m) => m ()
 paste = do
- sendKeyChord [CommandMod] VKey
+ sendKeyChord [CommandModifier] VKey
 
 -- | google a query. properly encodes the url. 
 google :: (MonadWorkflow m) => String -> m ()

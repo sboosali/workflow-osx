@@ -26,9 +26,9 @@ testDSL :: Workflow ClipboardText
 testDSL = do
 
  -- delay 30
- sendKeyChord [CommandMod, Shift] BKey
+ sendKeyChord [CommandModifier, ShiftModifier] BKey
  delay 1000
- sendKeyChord [CommandMod] DownArrowKey
+ sendKeyChord [CommandModifier] DownArrowKey
 
  app <- currentApplication
  s <- getClipboard
@@ -37,14 +37,14 @@ testDSL = do
  getClipboard
 
 markWord = do
- sendKeyChord [Option       ] LeftArrowKey
- sendKeyChord [Option, Shift] RightArrowKey
+ sendKeyChord [OptionModifier] LeftArrowKey
+ sendKeyChord [OptionModifier, ShiftModifier] RightArrowKey
 
 backWord = do
- sendKeyChord [Option] LeftArrowKey
+ sendKeyChord [OptionModifier] LeftArrowKey
 
 forWord = do
- sendKeyChord [Option] RightArrowKey
+ sendKeyChord [OptionModifier] RightArrowKey
 
 
 -- keyboard shortcuts don't need lag between each Keypress (hence

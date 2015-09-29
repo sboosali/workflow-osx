@@ -8,11 +8,11 @@ import Data.BitVector
 --
 --
 marshallMask :: Modifier -> BitVector
-marshallMask CommandMod  = 0x00100000
-marshallMask Control  = 0x00040000
-marshallMask Shift    = 0x00020000
-marshallMask Option   = 0x00080000
-marshallMask Function = 0x00800000
+marshallMask CommandModifier  = 0x00100000
+marshallMask ControlModifier  = 0x00040000
+marshallMask ShiftModifier    = 0x00020000
+marshallMask OptionModifier   = 0x00080000
+marshallMask FunctionModifier = 0x00800000
 
 -- yes: #define NX_CONTROLMASK 0x00040000
 -- no: #define NX_DEVICELCTLKEYMASK 0x00000001
