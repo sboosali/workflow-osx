@@ -36,7 +36,6 @@ type Workflow_ = Workflow ()
 data WorkflowF k
  = SendKeyChord    [Modifier] Key                   k
  | SendText        String                           k -- ^ a logical grouping for debugging and optimizing
- --TODO | SendMouseClick  [Modifier] Int MouseButton  k
 
  | GetClipboard                                     (ClipboardText -> k)
  | SetClipboard    ClipboardText                k
@@ -44,6 +43,7 @@ data WorkflowF k
  | CurrentApplication                               (Application -> k)
  | OpenApplication Application                      k
 
+ --TODO | SendMouseClick  [Modifier] Int MouseButton  k
  --TODO | CurrentWindow                               (Window -> k)
  --TODO | OpenWindow Window                      k
 
@@ -113,11 +113,19 @@ type CGEventFlags  = CULLong
 -- data KeyChord = KeyChord [Modifier] Key
 --  deriving (Show,Eq,Ord)
 
+-- | an (unordered, no-duplicates) sequence of key chords make up a keyboard shortcut 
 type KeyRiff  = [KeyChord]
+
+-- | 
 type KeyChord = ([Modifier], Key)
+
+-- | @pattern KeyChord ms k = (ms,k)@ 
 pattern KeyChord ms k = (ms, k)
+
+-- | @pattern NoMod k = ([],k)@ 
 pattern NoMod       k = ([],   k)
 
+-- | appends a modifier
 addMod :: Modifier -> KeyChord -> KeyChord
 addMod m (ms, k) = KeyChord (m:ms) k
 -- false positive nonexhaustive warning with the KeyChord pattern 
@@ -127,7 +135,7 @@ addMod m (ms, k) = KeyChord (m:ms) k
 the escape key is "pressed", not "held", it seems.
 (possibly explains its behavior in your terminal emulator?)
 
-@alt@ is 'Option'.
+@alt@ is 'OptionModifier'.
 
 -}
 data Modifier = ControlModifier | CommandModifier | ShiftModifier | OptionModifier | FunctionModifier
@@ -135,7 +143,7 @@ data Modifier = ControlModifier | CommandModifier | ShiftModifier | OptionModifi
  deriving (Show,Eq,Ord,Bounded,Enum,Data,Generic)
 -- data Modifier = ControlMod | CommandMod | ShiftMod | OptionMod | FunctionMod
 
-{- | all the keys on a standard keyboard.
+{- | all the keys on a standard Apple keyboard.
 
 
 -}

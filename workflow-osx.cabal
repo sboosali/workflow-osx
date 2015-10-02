@@ -9,8 +9,16 @@ maintainer: samboosalis@gmail.com
 stability: experimental
 homepage: https://github.com/sboosali/workflow-osx#readme
 bug-reports: https://github.com/sboosali/workflow-osx/issues
-synopsis: a "Workflow" monad (e.g. press some keys, click the mouse, get/set the clipboard) with Objective-C bindings 
-description: a "Workflow" monad (e.g. press some keys, click the mouse, get/set the clipboard) with Objective-C bindings 
+synopsis: a "Desktop Workflow" monad with Objective-C bindings 
+description:
+ a \"Desktop Workflow\" monad with Objective-C bindings
+ . 
+ e.g. press some keys, click the mouse, get/set the clipboard
+ . 
+ see @Workflow.OSX@ for examples
+ .
+ TODO exploit the free monad\'s flexibility to define platform-diagnostic workflows 
+
 category: Accessibility, Apple, Automation, Bindings, Desktop, FFI 
 author: Spiros Boosalis
 tested-with: GHC ==7.10.1

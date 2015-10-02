@@ -30,7 +30,7 @@ insert = sendText
 
 -- I want "type = mapM_ (press . KeyChord [] . key)" to be "atomic" i.e. no delay between each step. I want "press (KeyChord [Command] RKey) >> type text" to be "laggy" i.e. some delay between each step. If I "instrument" some "Workflow", by interleaving "Wait 25" between each step i.e. each "Free _", I can't distinguish between groups of steps. Thus, I should manually insert "Wait 25" between any steps that need some lag, or "automate it locally" in helper functions, but not "automate it globally" by interleaving.
 
--- | press "C-c", wait, and then return the clipboard contents 
+-- | access the currently selected region from Haskell, via the clipboard  
 copy :: (MonadWorkflow m) => m String
 copy = do
  sendKeyChord [CommandModifier] CKey
