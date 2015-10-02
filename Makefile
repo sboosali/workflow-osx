@@ -2,10 +2,9 @@ PACKAGE = workflow-osx
 VERSION = 0.0.0
 
 HC = cabal exec -- ghc
-HADDOCK = $(HOME)/haddock/.cabal-sandbox/bin/haddock
-HADDOCK_OPTIONS = --hyperlinked-source
 
 CODE = sources # tests
+EXECUTABLE = example
 
 
 # # # # # # # # # # # # # # # # # # 
@@ -34,10 +33,14 @@ test:
 
 
 document:
-# try to document with local haddock for the hyperlink source option 
-# 	cabal haddock --with-haddock="$(HADDOCK)" --haddock-options="$(HADDOCK_OPTIONS)" # ||
 	cabal haddock
 	open dist/doc/html/$(PACKAGE)/index.html
+
+hyperlink: 
+	cabal haddock --with-haddock="$(HOME)/haddock/.cabal-sandbox/bin/haddock" --haddock-options="--hyperlinked-source"
+#	open dist/doc/html/$(PACKAGE)/index.html
+	open dist/doc/html/$(PACKAGE)/src/SimplePlugins.html
+
 
 style:
 	hlint --hint=HLint.hs  *.hs $(CODE)
@@ -47,7 +50,7 @@ fix:
 
 check:
 #	cabal build --ghc-options="-fforce-recomp -fno-code"
-	cabal build --ghc-options="-fno-code"
+	cabal build $(EXECUTABLE) --ghc-options="-fno-code"
 
 
 # # # # # # # # # # # # # # # # # # 
@@ -58,7 +61,6 @@ clean:
 	rm -f Main *.{o,hi,dyn_o,dyn_hi}
 
 fresh: clean
-	cabal clean
 	rm -fr dist
 
 .PHONY: default clean fresh all build test document style check bench
