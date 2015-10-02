@@ -15,9 +15,11 @@ description:
  . 
  e.g. press some keys, click the mouse, get/set the clipboard
  . 
- see @Workflow.OSX@ for examples
+ see @Workflow.OSX@ for several examples
  .
- TODO exploit the free monad\'s flexibility to define platform-diagnostic workflows 
+ (if the build fails, see the <https://github.com/sboosali/workflow-osx#the-build README>)
+ . 
+ (this package is on hackage for convenience, but it's still a prerelease)
 
 category: Accessibility, Apple, Automation, Bindings, Desktop, FFI 
 author: Spiros Boosalis
