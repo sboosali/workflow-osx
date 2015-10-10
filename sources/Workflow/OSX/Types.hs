@@ -3,6 +3,7 @@ module Workflow.OSX.Types where
 import Workflow.OSX.Extra
 
 import Control.Monad.Free (MonadFree, Free)
+import Control.Monad.Free.Church  (F)
 import           Control.Monad.Catch          (MonadThrow)
 import Foreign.C.Types
 
@@ -31,6 +32,11 @@ type MonadWorkflow = MonadFree WorkflowF
 type Workflow = Free WorkflowF
 
 type Workflow_ = Workflow ()
+
+-- | church-encoded
+type CWorkflow = F WorkflowF
+
+type CWorkflow_ = CWorkflow ()
 
 -- | the "Workflow Functor".
 data WorkflowF k

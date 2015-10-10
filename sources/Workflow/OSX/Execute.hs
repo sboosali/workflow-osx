@@ -45,7 +45,7 @@ runWorkflowWithDelay t = iterM $ \case
  -- iterM :: (Monad m, Functor f) => (f (m a) -> m a) -> Free f a -> m a
 
  SendKeyChord    flags key k      -> threadDelay (t*1000) >> ObjC.pressKey flags key             >> k
- SendText        s k              -> runWorkflow (sendTextAsKeypressesWithDelay t s)              >> k
+ SendText        s k              -> runWorkflow (sendTextAsKeypressesWithDelay 1 s)             >> k
 
  GetClipboard    f                -> threadDelay (t*1000) >> ObjC.getClipboard                   >>= f
  SetClipboard    s k              -> threadDelay (t*1000) >> ObjC.setClipboard s                 >> k
