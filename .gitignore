@@ -5,6 +5,7 @@ goals
 TODO
 cbits/main
 .projectile
+scripts/
 
 # Haskell
 dist
