@@ -1,12 +1,12 @@
-{-# LANGUAGE DeriveDataTypeable, DeriveFunctor, DeriveGeneric, PatternSynonyms, ConstraintKinds, FlexibleContexts #-}
+{-# LANGUAGE DeriveAnyClass, PatternSynonyms, ConstraintKinds, FlexibleContexts #-}
 module Workflow.OSX.Types where
 import Workflow.OSX.Extra
 
 import Control.Monad.Free (MonadFree, Free)
+import Control.Monad.Trans.Free (FreeT)
 import Control.Monad.Free.Church  (F)
 import           Control.Monad.Catch          (MonadThrow)
 import Foreign.C.Types
-
 
 
 -- | a monad constraint for "workflow effects", (just like @MonadState@ is a monad constraint for "state effects") can use in any monad transformer stack that handles them.
@@ -30,7 +30,6 @@ type MonadWorkflow = MonadFree WorkflowF
 
 -- | a platform-agnostic free monad, which can be executed by platform-specific bindings.
 type Workflow = Free WorkflowF
-
 type Workflow_ = Workflow ()
 
 -- | church-encoded
@@ -146,7 +145,7 @@ the escape key is "pressed", not "held", it seems.
 -}
 data Modifier = ControlModifier | CommandModifier | ShiftModifier | OptionModifier | FunctionModifier
  -- Command is qualified to not conflict with Commands.Command.Types
- deriving (Show,Eq,Ord,Bounded,Enum,Data,Generic)
+ deriving (Show,Read,Eq,Ord,Bounded,Enum,Data,Generic,NFData)
 -- data Modifier = ControlMod | CommandMod | ShiftMod | OptionMod | FunctionMod
 
 {- | all the keys on a standard Apple keyboard.
@@ -245,7 +244,7 @@ data Key
  | F19Key
  | F20Key
 
- deriving (Show,Eq,Ord,Bounded,Enum,Data,Generic)
+ deriving (Show,Read,Eq,Ord,Bounded,Enum,Data,Generic,NFData)
 
 {- |
 

@@ -1,13 +1,12 @@
 -- | assorted functionality, imported by most modules in this package.  
 module Workflow.OSX.Extra 
  ( module Workflow.OSX.Extra 
- , module Data.Data
- , module GHC.Generics
- , (<>)
- , traverse_
+ , Data, Generic, NFData
+ , (<>), traverse_
  ) where
 
 import           Control.Monad.Catch          (MonadThrow, throwM)
+import Control.DeepSeq (NFData) 
 
 import Data.Data (Data) 
 import           GHC.Generics                 (Generic)
