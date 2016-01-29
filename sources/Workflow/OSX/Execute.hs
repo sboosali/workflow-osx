@@ -1,9 +1,10 @@
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE LambdaCase, ScopedTypeVariables, FlexibleContexts #-}
 module Workflow.OSX.Execute where
 import Workflow.OSX.Bindings as ObjC
 import Workflow.OSX.Types
 
 import Control.Monad.Free
+import Control.Monad.Trans.Free hiding (Pure, Free, iterM) -- TODO  
 import Control.Monad.Trans.State
 
 import Control.Concurrent             (threadDelay)
@@ -11,60 +12,105 @@ import Control.Concurrent             (threadDelay)
 import Data.Foldable                  (traverse_)
 import Data.List                      (intercalate)
 import Data.Monoid                    ((<>))
+import Control.Monad.IO.Class
 
-
+ 
 runWorkflow :: Workflow a -> IO a
-runWorkflow = iterM $ \case
- -- iterM :: (Monad m, Functor f) => (f (m a) -> m a) -> Free f a -> m a
-
- SendKeyChord    flags key k      -> ObjC.pressKey flags key >> k
- SendText        s k              -> runWorkflow (sendTextAsKeypresses s) >> k
- -- terminates because sendTextAsKeypresses is exclusively a sequence of SendKeyChord'es
-
- -- TODO SendMouseClick  flags n button k -> ObjC.clickMouse flags n button >> k
-
- GetClipboard    f                -> ObjC.getClipboard >>= f
- SetClipboard    s k              -> ObjC.setClipboard s >> k
-
- CurrentApplication f             -> ObjC.currentApplication >>= f
- OpenApplication app k            -> ObjC.openApplication app >> k
- OpenURL         url k            -> ObjC.openURL url >> k
-
- Delay           t k              -> threadDelay (t*1000) >> k
- -- 1,000 µs is 1ms
-
--- | returns a sequence of 'SendKeyChord'es.
-sendTextAsKeypresses :: String -> Workflow ()
-sendTextAsKeypresses
- = traverse_ (\(modifiers, key) -> liftF $ SendKeyChord modifiers key ())
- . concatMap char2keypress
- -- liftF :: WorkflowF () -> Free WorkflowF ()
+runWorkflow = runWorkflowT . toFreeT 
 
 runWorkflowWithDelay :: Int -> Workflow a -> IO a
-runWorkflowWithDelay t = iterM $ \case
- -- iterM :: (Monad m, Functor f) => (f (m a) -> m a) -> Free f a -> m a
+runWorkflowWithDelay t = runWorkflowT . delayWorkflowT t . toFreeT  
 
- SendKeyChord    flags key k      -> threadDelay (t*1000) >> ObjC.pressKey flags key             >> k
- SendText        s k              -> runWorkflow (sendTextAsKeypressesWithDelay 1 s)             >> k
+runWorkflowWithDelayT :: (MonadIO m) => Int -> WorkflowT m a -> m a 
+runWorkflowWithDelayT t = runWorkflowT . delayWorkflowT t 
 
- GetClipboard    f                -> threadDelay (t*1000) >> ObjC.getClipboard                   >>= f
- SetClipboard    s k              -> threadDelay (t*1000) >> ObjC.setClipboard s                 >> k
+{-| intersperse a delay between each action. 
 
- CurrentApplication f             -> threadDelay (t*1000) >> ObjC.currentApplication             >>= f
- OpenApplication app k            -> threadDelay (t*1000) >> ObjC.openApplication app            >> k
- OpenURL         url k            -> threadDelay (t*1000) >> ObjC.openURL url                    >> k
+@
+delayWorkflowT 1 $ do
+ sendKeyChord [CommandModifier] VKey
+ s <- getClipboard 
+ sendText s 
+@
 
- Delay           t_ k              -> threadDelay (t_*1000)                                      >> k
+is equivalent to: 
+
+@
+do 
+ sendKeyChord [CommandModifier] VKey
+ delay 1 
+ s <- getClipboard 
+ delay 1 
+ sendText s 
+@
+
+-}
+delayWorkflowT :: (Monad m) => Int -> WorkflowT m a -> WorkflowT m a 
+delayWorkflowT t = intersperseT (Delay t ())
+
+{-| 
+
+you can eliminate a custom monad: 
+
+@
+newtype W a = W
+ { getW :: WorkflowT IO a
+ } deriving
+ ( MonadWorkflow
+ , MonadIO
+ , Monad
+ , Applicative
+ , Functor 
+ )
+@
+
+with: 
+
+@
+runW :: W a -> IO a
+runW = 'runMonadWorkflow' . getW
+@
+
+-} 
+runWorkflowT :: forall m a. (MonadIO m) => WorkflowT m a -> m a
+runWorkflowT = iterT go
+ where 
+ go :: WorkflowF (m a) -> m a
+ go = \case
+
+  SendKeyChord    flags key k      -> runSendKeyChord flags key >> k
+  SendText        s k              -> runSendText s >> k
+  -- TODO support Unicode by inserting "directly" 
+  -- terminates because sendTextAsKeypresses is exclusively a sequence of SendKeyChord'es
+
+  -- TODO SendMouseClick  flags n button k -> ObjC.clickMouse flags n button >> k
+
+  GetClipboard    f                -> liftIO (ObjC.getClipboard) >>= f
+  SetClipboard    s k              -> liftIO (ObjC.setClipboard s) >> k
+
+  CurrentApplication f             -> liftIO (ObjC.currentApplication) >>= f
+  OpenApplication app k            -> liftIO (ObjC.openApplication app) >> k
+  OpenURL         url k            -> liftIO (ObjC.openURL url) >> k
+
+  Delay           t k              -> liftIO (threadDelay (t*1000)) >> k
  -- 1,000 µs is 1ms
 
--- | returns a sequence of 'SendKeyChord'es.
-sendTextAsKeypressesWithDelay :: Int -> String -> Workflow ()
-sendTextAsKeypressesWithDelay t
- = traverse_ (\(modifiers, key) -> do
-    liftF $ Delay t                    ()
-    liftF $ SendKeyChord modifiers key ())
+{-| 
+
+TODO support Unicode by inserting directly, not indirectly via keypresses  
+https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/EventOverview/HandlingKeyEvents/HandlingKeyEvents.html
+Most key events—that is, those representing characters to be inserted as text—are dispatched by the NSWindow object associated with the key window to the first responder.
+characters and charactersIgnoringModifiers—The responder can extract the Unicode character data associated with the event and insert it as text or interpret it as commands. The charactersIgnoringModifiers method ignores any modifier keystroke (except for Shift) when returning the character data. Note that both method names are plural because a keystroke can produce more than one character (for example, “à” is composed of ‘a’ and ‘`‘).
+isARepeat—This method tells the responder whether the same key was pressed rapidly in succession.
+
+-}
+runSendText :: (MonadIO m) => String -> m () 
+runSendText 
+ = traverse_ (uncurry runSendKeyChord)
  . concatMap char2keypress
- -- liftF :: WorkflowF () -> Free WorkflowF ()
+
+runSendKeyChord :: (MonadIO m) => [Modifier] -> Key -> m () 
+runSendKeyChord flags key = liftIO $ ObjC.pressKey flags key
 
 {- | shows the "static" data flow of some 'Workflow', by showing its primitive operations, in @do-notation@.
 
@@ -137,11 +183,11 @@ showWorkflow as = "do\n" <> evalState (showWorkflow_ as) 1
  showArgs :: [String] -> String
  showArgs xs = intercalate " " (fmap (("(" <>) . (<> ")")) xs) <> "\n"
 
-type Gensym = Int
+ gensym :: State Int String
+ gensym = do
+  i <- get
+  put $ i + 1
+  return $ "x" <> show i
 
-gensym :: State Gensym String
-gensym = do
- i <- get
- put $ i + 1
- return $ "x" <> show i
+type Gensym = Int
 

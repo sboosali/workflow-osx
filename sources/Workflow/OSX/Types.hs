@@ -32,6 +32,11 @@ type MonadWorkflow = MonadFree WorkflowF
 type Workflow = Free WorkflowF
 type Workflow_ = Workflow ()
 
+-- TODO type Workflow = WorkflowT Identity 
+
+-- | transformer 
+type WorkflowT = FreeT WorkflowF
+
 -- | church-encoded
 type CWorkflow = F WorkflowF
 
