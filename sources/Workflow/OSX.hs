@@ -9,8 +9,8 @@ import qualified Network.HTTP.Types.URI as WAI
 
 -- | google a query, in the default browser. properly encodes the url. 
 google :: (MonadWorkflow m) => String -> m ()
-google (BS.pack -> query) = do
- 'openURL' (BS.unpack $ \"https:\/\/www.google.com\/search\" <> WAI.renderQuery True [(\"q\", Just query)])
+google query = do
+ 'openURL' (BS.unpack (\"https:\/\/www.google.com\/search\" <> WAI.renderQuery True [(\"q\", Just (BS.pack query))]))
 @
 
 
@@ -74,6 +74,25 @@ switch_tab s = do
  'sendKeyChord' [] 'ReturnKey'
  
 chromeDelay = 250                              -- milliseconds
+@
+
+
+Example 5:
+
+@
+-- | cut the currently selected region
+cut :: (MonadWorkflow m) => m String
+cut = do
+ 'sendKeyChord' ['CommandModifier'] 'XKey'
+ 'delay' 250
+ 'getClipboard'
+
+-- | transform the currently selected region from Haskell, via the clipboard  
+transformClipboard :: (MonadWorkflow m) => (String -> String) -> m () 
+transformClipboard f = do
+ contents <- 'cut'
+ 'setClipboard' (f contents) 
+ 'sendKeyChord' ['CommandModifier'] 'VKey'
 @
 
 

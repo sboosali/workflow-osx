@@ -45,3 +45,7 @@ openURL s = withCString s objc_openURL
 openApplication :: Application -> IO ()
 openApplication s = withCString s objc_openApplication
 
+-- holdKeyFor :: Int -> [Modifier] -> Key -> IO ()
+-- holdKeyFor milliseconds (encodeModifiers -> flags) (encodeKey -> key) =
+--  objc_pressKeyDown flags key
+
