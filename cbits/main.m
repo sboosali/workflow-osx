@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
 
-#import "objc_actor.h"
+#import "objc_workflow.h"
 
 /* 
 [NSThread sleepForTimeInterval:(30 / 1000.0f)];
@@ -41,6 +41,9 @@ int main(int argc, char** argv)
  // [NSThread sleepForTimeInterval:0.5f];
  // openApplication("Google Chrome");  // works, no more weirdness
 
+  // pressKeyDown(0, 0x7B);
+  // pressKeyUp(0, 0x7B);
+  pressKey(0, 0x7B);
 
 //   // printApplications ();
 

@@ -134,6 +134,42 @@ void pressKey(CGEventFlags modifiers, CGKeyCode key) {
  CFRelease(source);
 }
 
+void pressKeyDown (CGEventFlags modifiers, CGKeyCode key) {
+  // NSLog(@"pressKey");         // debug
+    CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState); // kCGEventSourceStateCombinedSessionState
+
+    // events to press a key
+    CGEventRef event = CGEventCreateKeyboardEvent(source, key, true);  // key down
+
+    // add modifiers to event
+    CGEventSetFlags(event, modifiers);
+
+    // send a keyboard event (a quartz event) "globally"
+    CGEventPost(kCGHIDEventTap, event); // kCGSessionEventTap
+
+ // free memory
+ CFRelease(event);
+ CFRelease(source);
+}
+
+void pressKeyUp (CGEventFlags modifiers, CGKeyCode key) {
+  // NSLog(@"pressKey");         // debug
+    CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState); // kCGEventSourceStateCombinedSessionState
+
+    // events to press a key
+    CGEventRef event = CGEventCreateKeyboardEvent(source, key, false); // key up
+
+    // add modifiers to event
+    CGEventSetFlags(event, modifiers);
+
+    // send a keyboard event (a quartz event) "globally"
+    CGEventPost(kCGHIDEventTap, event); // kCGSessionEventTap
+
+ // free memory
+ CFRelease(event);
+ CFRelease(source);
+}
+
 // may take up to 15s (!) when the keypresses sent to and after besides the one that's running the server
 void pressKeyToCurrentApplication(CGEventFlags modifiers, CGKeyCode key) {
   pressKeyTo(modifiers, key, currentApplicationPSN());

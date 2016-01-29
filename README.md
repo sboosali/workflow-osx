@@ -2,9 +2,7 @@
 
 a (free) monad, with Objective-C bindings, for "Workflow" actions. 
 
-e.g. press some keys, click the mouse, get and set the clipboard. GHC's C FFI takes only microseconds.
-
-for examples, see the documentation on hackage <https://hackage.haskell.org/package/workflow-osx>
+for detailed examples, see the documentation on hackage <https://hackage.haskell.org/package/workflow-osx> or github (<http://sboosali.github.io/documentation/workflow-osx/index.html).  
 
 # Issues
 
