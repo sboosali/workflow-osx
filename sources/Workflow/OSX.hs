@@ -100,8 +100,6 @@ transformClipboard f = do
 module Workflow.OSX
  ( module Export_
  ) where
-
-import Workflow.OSX.DSL       as Export_
 import Workflow.OSX.Types     as Export_
 -- import Workflow.OSX.Bindings -- names conflict with Workflow.OSX.DSL
 import Workflow.OSX.Foreign   as Export_

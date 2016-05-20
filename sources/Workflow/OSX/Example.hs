@@ -32,7 +32,6 @@ testDSL = do
 
  app <- currentApplication
  s <- getClipboard
- google s
  setClipboard app
  getClipboard
 
@@ -59,3 +58,14 @@ testChrome = do
  replicateM_ 10 backWord
  delay 1000
  markWord
+
+-- | access the currently selected region from Haskell, via the clipboard
+copy :: (MonadWorkflow m) => m String
+copy = do
+ sendKeyChord [CommandModifier] CKey
+ delay 100 -- TODO how long does it need to wait?
+ getClipboard
+
+paste :: (MonadWorkflow m) => m ()
+paste = do
+ sendKeyChord [CommandModifier] VKey

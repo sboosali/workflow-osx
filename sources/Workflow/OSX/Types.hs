@@ -1,8 +1,10 @@
 {-# LANGUAGE DeriveAnyClass, PatternSynonyms, ConstraintKinds, FlexibleContexts #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Workflow.OSX.Types where
 import Workflow.OSX.Extra
 
-import Control.Monad.Free (MonadFree, Free)
+import Control.Monad.Free (MonadFree, Free, liftF)
+import           Control.Monad.Free.TH       (makeFree)
 import Control.Monad.Trans.Free (FreeT)
 import Control.Monad.Free.Church  (F)
 import           Control.Monad.Catch          (MonadThrow)
@@ -532,3 +534,8 @@ keypress2char ((,) [     ] ReturnKey)       = return $ '\n'
 keypress2char k = failed $ "keypress2char: non-unicode-representable Keypress: " <> show k
 
 -- TODO partial isomorphism between char2keypress and keypress2char?
+
+makeFree ''WorkflowF
+
+insert :: (MonadWorkflow m) => String -> m ()
+insert = sendText
