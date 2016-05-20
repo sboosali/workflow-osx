@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import "VRecognizer.h"
+#import "Recognizer.h"
 
 //int main(int argc, const char * argv[]) {
 //    @autoreleasepool {
@@ -15,11 +15,19 @@ int main(int argc, const char * argv[]) {
 
      NSLog(@"-------------------");
      
-     VRecognizer* recognizer = [[VRecognizer alloc] initWithCommands:@[@"stop listening",@"start listening"]];
+     //Recognizer* recognizer = [[Recognizer alloc] initWithCommands:@[@"stop listening",@"start listening"]];
      
-     // NSRunLoop* myRunLoop =
-     [NSRunLoop currentRunLoop];
+     Recognizer* recognizer = [Recognizer new];
+     [recognizer setCommands:@[@"stop listening",@"start listening"]];
+     [recognizer start];
      
     }
+    
+    NSRunLoop *loop = [NSRunLoop currentRunLoop];
+    while (1) {
+        [loop run];
+    }
+
+
     return 0;
 }
