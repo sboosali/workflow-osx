@@ -1,4 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction, FlexibleContextsg #-}
+{-# LANGUAGE NoMonomorphismRestriction, FlexibleContexts #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures -fno-warn-unused-binds -fno-warn-unused-matches #-}
 -- | some example workflows you can derive from the primitives in 'Workflow'. (see the source)
 module Workflow.OSX.Example where
