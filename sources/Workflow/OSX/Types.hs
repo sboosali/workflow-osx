@@ -12,8 +12,8 @@ import Foreign.C.Types
 -- | a monad constraint for "workflow effects", (just like @MonadState@ is a monad constraint for "state effects") can use in any monad transformer stack that handles them.
 type MonadWorkflow = MonadFree WorkflowF
 
--- {- | for convenience. 
--- without loss of generality (I don't think) when declaring simple monadic effects (like Kleisli arrows). 
+-- {- | for convenience.
+-- without loss of generality (I don't think) when declaring simple monadic effects (like Kleisli arrows).
 
 -- e.g.
 
@@ -32,9 +32,9 @@ type MonadWorkflow = MonadFree WorkflowF
 type Workflow = Free WorkflowF
 type Workflow_ = Workflow ()
 
--- TODO type Workflow = WorkflowT Identity 
+-- TODO type Workflow = WorkflowT Identity
 
--- | transformer 
+-- | transformer
 type WorkflowT = FreeT WorkflowF
 
 -- | church-encoded
@@ -65,9 +65,9 @@ data WorkflowF k
  deriving (Functor)
  -- deriving (Functor,Data)
 
--- data WorkflowF mod key k  TODO platform-specific keyboards 
---  = SendKeyChord    [mod] key      k 
--- TODO convert between keyboards, like Alt on Windows/Linux being Command on OSX 
+-- data WorkflowF mod key k  TODO platform-specific keyboards
+--  = SendKeyChord    [mod] key      k
+-- TODO convert between keyboards, like Alt on Windows/Linux being Command on OSX
 
 type ClipboardText = String
 -- newtype ClipboardText = ClipboardText String  deriving (Show,Eq,Ord,IsString)
@@ -82,7 +82,7 @@ type Time = Int
 -- newtype Time = Time String  deriving (Show,Eq,Ord,Num)
 -- units package
 
--- class IsString TODO needs Free WorkflowF, which must be lifted, which isn't better than insert 
+-- class IsString TODO needs Free WorkflowF, which must be lifted, which isn't better than insert
 
 
 {- | relates a Haskell type with a Objective-C type:
@@ -123,22 +123,22 @@ type CGEventFlags  = CULLong
 -- data KeyChord = KeyChord [Modifier] Key
 --  deriving (Show,Eq,Ord)
 
--- | an (unordered, no-duplicates) sequence of key chords make up a keyboard shortcut 
+-- | an (unordered, no-duplicates) sequence of key chords make up a keyboard shortcut
 type KeyRiff  = [KeyChord]
 
--- | 
+-- |
 type KeyChord = ([Modifier], Key)
 
--- | @pattern KeyChord ms k = (ms,k)@ 
+-- | @pattern KeyChord ms k = (ms,k)@
 pattern KeyChord ms k = (ms, k)
 
--- | @pattern NoMod k = ([],k)@ 
+-- | @pattern NoMod k = ([],k)@
 pattern NoMod       k = ([],   k)
 
 -- | appends a modifier
 addMod :: Modifier -> KeyChord -> KeyChord
 addMod m (ms, k) = KeyChord (m:ms) k
--- false positive nonexhaustive warning with the KeyChord pattern 
+-- false positive nonexhaustive warning with the KeyChord pattern
 
 {- | modifier keys are keys that can be "held".
 
@@ -261,7 +261,7 @@ data Key
 int2keypress :: Integer -> [KeyChord]
 int2keypress = concatMap char2keypress . show
 
-{- | 
+{- |
 
 a (base ten) digit is a number between zero and nine inclusive.
 

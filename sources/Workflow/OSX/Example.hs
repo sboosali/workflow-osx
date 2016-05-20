@@ -2,9 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures -fno-warn-unused-binds -fno-warn-unused-matches #-}
 -- | some example workflows you can derive from the primitives in 'Workflow'. (see the source)
 module Workflow.OSX.Example where
-import Workflow.OSX.DSL
-import Workflow.OSX.Execute
-import Workflow.OSX.Types
+import Workflow.OSX
 
 import Control.Monad                 (replicateM_)
 

@@ -98,18 +98,13 @@ transformClipboard f = do
 
 -}
 module Workflow.OSX
- ( module Workflow.OSX.Types
- , module Workflow.OSX.DSL
- , module Workflow.OSX.Foreign
- , module Workflow.OSX.Constants
- , module Workflow.OSX.Marshall
- , module Workflow.OSX.Execute
+ ( module Export_
  ) where
 
-import Workflow.OSX.DSL
-import Workflow.OSX.Types
+import Workflow.OSX.DSL       as Export_
+import Workflow.OSX.Types     as Export_
 -- import Workflow.OSX.Bindings -- names conflict with Workflow.OSX.DSL
-import Workflow.OSX.Foreign
-import Workflow.OSX.Constants
-import Workflow.OSX.Execute
-import Workflow.OSX.Marshall
+import Workflow.OSX.Foreign   as Export_
+import Workflow.OSX.Constants as Export_
+import Workflow.OSX.Execute   as Export_
+import Workflow.OSX.Marshall  as Export_
