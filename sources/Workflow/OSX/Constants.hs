@@ -1,13 +1,11 @@
 module Workflow.OSX.Constants where
 import Workflow.OSX.Types
 
-import Data.BitVector
-
 
 -- | line 236 of </System/Library/Frameworks/IOKit.framework/Versions/A/Headers/hidsystem/IOLLEvent.h>
 --
 --
-marshallMask :: Modifier -> BitVector
+marshallMask :: Modifier -> CGEventFlags
 marshallMask CommandModifier  = 0x00100000
 marshallMask ControlModifier  = 0x00040000
 marshallMask ShiftModifier    = 0x00020000
@@ -20,7 +18,7 @@ marshallMask FunctionModifier = 0x00800000
 
 -- | line 196 of </System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/Events.h>
 --
-marshallKeycode :: Key -> BitVector
+marshallKeycode :: Key -> CGKeyCode
 marshallKeycode AKey             = 0x00
 marshallKeycode SKey             = 0x01
 marshallKeycode DKey             = 0x02
@@ -104,4 +102,3 @@ marshallKeycode LeftArrowKey     = 0x7B
 marshallKeycode RightArrowKey    = 0x7C
 marshallKeycode DownArrowKey     = 0x7D
 marshallKeycode UpArrowKey       = 0x7E
-

@@ -2,9 +2,7 @@ module Workflow.OSX.Marshall where
 import Workflow.OSX.Constants
 import Workflow.OSX.Types
 
-import Data.BitVector                  hiding (foldl)
-
-import Foreign.C.Types
+import Data.Bits
 
 
 {- | Marshall the bitmask.
@@ -36,12 +34,9 @@ together, we don't need to remove duplicates.
 
 
 -}
-encodeModifiers :: [Modifier] -> CULLong
+encodeModifiers :: [Modifier] -> CGEventFlags
 encodeModifiers
- = CULLong
- . fromIntegral
- . uint
- . foldl (.|.) (zeros 64)
+ = foldl (.|.) zeroBits
  . fmap marshallMask
 
 {- | marshall the 'keycode'
@@ -53,10 +48,6 @@ relates Haskell types with Objective-C types:
 * Haskell can marshal 'CUShort'
 
 -}
-encodeKey :: Key -> CUShort
+encodeKey :: Key -> CGKeyCode
 encodeKey
- = CUShort
- . fromIntegral
- . uint
- . marshallKeycode
-
+ = marshallKeycode

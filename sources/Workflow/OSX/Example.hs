@@ -1,3 +1,4 @@
+{-# LANGUAGE NoMonomorphismRestriction, FlexibleContexts #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures -fno-warn-unused-binds -fno-warn-unused-matches #-}
 -- | some example workflows you can derive from the primitives in 'Workflow'. (see the source)
 module Workflow.OSX.Example where
@@ -9,11 +10,12 @@ import Control.Monad                 (replicateM_)
 
 
 main = do
- attemptWorkflow testDerived
- -- attemptWorkflow testChrome
+ -- attemptWorkflow testDerived
+ attemptWorkflow testChrome
+ -- attemptWorkflow testDSL
 
 attemptWorkflow a = do
- putStrLn ""
+ putStrLn "\n"
  putStrLn $ showWorkflow a
  runWorkflow a
 
@@ -59,4 +61,3 @@ testChrome = do
  replicateM_ 10 backWord
  delay 1000
  markWord
-
