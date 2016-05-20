@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-#import "objc_workflow.h"
+#import "workflow.h"
 
 
 /* appInfo
@@ -21,8 +21,8 @@
 /* ProcessSerialNumber
 https: //developer.apple.com/legacy/library/documentation/Carbon/Reference/Process_Manager/index.html#//apple_ref/doc/c_ref/ProcessSerialNumber
 
-struct ProcessSerialNumber { unsigned long highLongOfPSN; unsigned long lowLongOfPSN; }; 
-typedef  struct ProcessSerialNumber  ProcessSerialNumber; 
+struct ProcessSerialNumber { unsigned long highLongOfPSN; unsigned long lowLongOfPSN; };
+typedef  struct ProcessSerialNumber  ProcessSerialNumber;
 typedef  ProcessSerialNumber*        ProcessSerialNumberPtr;
 */
 
@@ -111,7 +111,7 @@ void openApplication(const char* s) {
   [[NSWorkspace sharedWorkspace] launchApplication:fromUTF8(s)];
 }
 
-// simulates a key press from the keyboard. works in pop-ups like Alfred. 
+// simulates a key press from the keyboard. works in pop-ups like Alfred.
 void pressKey(CGEventFlags modifiers, CGKeyCode key) {
   // NSLog(@"pressKey");         // debug
     CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState); // kCGEventSourceStateCombinedSessionState
@@ -231,12 +231,12 @@ CGEventSetFlags(eventUp,   modifiers);
 for (int nthClick=1; nthClick<=numClicks; nthClick++) {
   CGEventSetIntegerValueField(eventDown, kCGMouseEventClickState, nthClick);
   CGEventSetIntegerValueField(eventUp,   kCGMouseEventClickState, nthClick);
-  CGEventPost(kCGHIDEventTap, eventDown);  
-  CGEventPost(kCGHIDEventTap, eventUp);  
+  CGEventPost(kCGHIDEventTap, eventDown);
+  CGEventPost(kCGHIDEventTap, eventUp);
  }
 
 // free memory
-CFRelease(eventDown); 
+CFRelease(eventDown);
 CFRelease(eventUp);
 
 }
