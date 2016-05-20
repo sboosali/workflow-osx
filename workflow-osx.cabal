@@ -71,14 +71,17 @@ library
 
     exposed-modules:
         Workflow.OSX
-        Workflow.OSX.Example
         Workflow.OSX.Types
         Workflow.OSX.Bindings
-        Workflow.OSX.Bindings.Raw
+        Workflow.OSX.Foreign
         Workflow.OSX.Constants
         Workflow.OSX.Marshall
         Workflow.OSX.Execute
+
         Workflow.OSX.DSL
+        Workflow.OSX.Example
+
+    -- other-modules:
         Workflow.OSX.Extra
 
     build-depends:

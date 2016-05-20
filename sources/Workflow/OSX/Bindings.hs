@@ -1,6 +1,6 @@
 {-# LANGUAGE ViewPatterns #-}
 module Workflow.OSX.Bindings where
-import Workflow.OSX.Bindings.Raw
+import Workflow.OSX.Foreign
 import Workflow.OSX.Marshall
 import Workflow.OSX.Types
 
@@ -48,4 +48,3 @@ openApplication s = withCString s objc_openApplication
 -- holdKeyFor :: Int -> [Modifier] -> Key -> IO ()
 -- holdKeyFor milliseconds (encodeModifiers -> flags) (encodeKey -> key) =
 --  objc_pressKeyDown flags key
-
