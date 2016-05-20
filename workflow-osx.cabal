@@ -1,14 +1,21 @@
 name: workflow-osx
 version: 0.0.1
-cabal-version: >=1.10
-build-type: Simple
-license: GPL-3
-license-file: LICENSE
-copyright: Copyright (C) 2015 Spiros M. Boosalis
+
+author: Spiros Boosalis
 maintainer: samboosalis@gmail.com
 stability: experimental
 homepage: https://github.com/sboosali/workflow-osx#readme
 bug-reports: https://github.com/sboosali/workflow-osx/issues
+
+cabal-version: >=1.10
+build-type: Simple
+license: GPL-3
+license-file: LICENSE
+copyright: Copyright (C) 2016 Spiros M. Boosalis
+
+tested-with: GHC ==7.10.*
+
+category: Accessibility, Apple, Automation, Bindings, Desktop, FFI
 synopsis: a "Desktop Workflow" monad with Objective-C bindings
 description:
   a \"Desktop Workflow\" monad with Objective-C bindings.
@@ -51,18 +58,16 @@ description:
 -- * get the name of the current window
 -- * click the mouse
 
-category: Accessibility, Apple, Automation, Bindings, Desktop, FFI
-author: Spiros Boosalis
-tested-with: GHC ==7.10.*
+
 extra-source-files:
   README.md
-
   native/workflow.h
   native/Makefile
 
 source-repository head
     type: git
     location: https://github.com/sboosali/workflow-osx
+
 
 library
     hs-source-dirs: sources
