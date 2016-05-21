@@ -37,7 +37,7 @@ together, we don't need to remove duplicates.
 encodeModifiers :: [Modifier] -> CGEventFlags
 encodeModifiers
  = foldl (.|.) zeroBits
- . fmap marshallMask
+ . fmap toCGEventFlags
 
 {- | marshall the 'keycode'
 
@@ -50,4 +50,4 @@ relates Haskell types with Objective-C types:
 -}
 encodeKey :: Key -> CGKeyCode
 encodeKey
- = marshallKeycode
+ = toCGKeyCode

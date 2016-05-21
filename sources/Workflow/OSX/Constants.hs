@@ -7,18 +7,16 @@ import Workflow.OSX.Types
 
 line 236 of
 </System/Library/Frameworks/IOKit.framework/Versions/A/Headers/hidsystem/IOLLEvent.h>
->>>>>>> Stashed changes
-
-toCGEventFlags :: Modifier -> CGEventFlags
 
 -}
-marshallMask :: Modifier -> BitVector
-marshallMask = \case
+toCGEventFlags :: Modifier -> CGEventFlags
+toCGEventFlags = \case
  CommandModifier  -> 0x00100000
  ControlModifier  -> 0x00040000
  ShiftModifier    -> 0x00020000
  OptionModifier   -> 0x00080000
  FunctionModifier -> 0x00800000
+
 -- yes: #define NX_CONTROLMASK 0x00040000
 -- no: #define NX_DEVICELCTLKEYMASK 0x00000001
 -- no: #define NX_DEVICERCTLKEYMASK 0x00002000
@@ -28,11 +26,9 @@ marshallMask = \case
 line 196 of
 </System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/Events.h>
 
-toCGKeyCode :: Key -> CGKeyCode
-
 -}
-marshallKeycode :: Key -> BitVector
-marshallKeycode = \case
+toCGKeyCode :: Key -> CGKeyCode
+toCGKeyCode = \case
  AKey             -> 0x00
  SKey             -> 0x01
  DKey             -> 0x02
