@@ -13,7 +13,7 @@ currentApplication = do -- TODO munge, default to Global
  return path
 
 -- |
--- TODO Applications whose name/paths have Unicode characters may or may not marshall correctly.
+-- TODO Applications whose name/paths have Unicode characters may or may not marshall correctly. they should, unless we need CWString.
 currentApplicationPath :: IO String
 currentApplicationPath = objc_currentApplicationPath >>= peekCString
 

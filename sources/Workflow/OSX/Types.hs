@@ -93,7 +93,7 @@ type Time = Int
 * line 34 of </System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers/CGRemoteOperation.h> defines @typedef uint16_t CGKeyCode;@
 
 -}
-type CGKeyCode     = CUShort
+type CGKeyCode     = CUShort --TODO newtype
 
 {- | relates a Haskell type with a Objective-C type:
 
@@ -101,7 +101,7 @@ type CGKeyCode     = CUShort
 * line 98 of </System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers/CGEventTypes.h> defines @typedef uint64_t CGEventFlags;@
 
 -}
-type CGEventFlags  = CULLong
+type CGEventFlags  = CULLong --TODO newtype
 
 -- {- | relates a Haskell type with a Objective-C type:
 
