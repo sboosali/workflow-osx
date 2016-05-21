@@ -132,4 +132,4 @@ executable workflow-osx-example
 
     build-depends:
         base ==4.8.*
-      , workflow-osx ==0.0.1
+      , workflow-osx
