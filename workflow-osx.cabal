@@ -118,6 +118,12 @@ executable workflow-osx-example
     if !os(osx)
        buildable: False
 
+    -- without:
+    -- <command line>: cannot satisfy -package-id workflow-osx-0.0.1-inplace
+    --
+    -- with:
+    -- Package workflow-osx-0.0.1 can't be built on this system.
+
     main-is:        Main.hs
     hs-source-dirs: .
 
