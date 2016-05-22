@@ -1,4 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
+{-| low-level bindings, with C types.
+
+-}
 module Workflow.OSX.Foreign where
 import Workflow.OSX.Types
 
@@ -7,15 +10,15 @@ import Foreign.C.Types             (CULLong (..), CUShort (..))
 -- import Data.Word (Word32)
 
 
-foreign import ccall safe "workflow.h currentApplicationPath" objc_currentApplicationPath
+foreign import ccall safe "workflow.h currentApplicationPath" c_currentApplicationPath
  :: IO CString
 
-foreign import ccall safe "workflow.h pressKey"               objc_pressKey
+foreign import ccall safe "workflow.h pressKey"               c_pressKey
  :: CGEventFlags
  -> CGKeyCode
  -> IO ()
 
--- foreign import ccall safe "workflow.h clickMouse"             objc_clickMouse
+-- foreign import ccall safe "workflow.h clickMouse"             c_clickMouse
 --  :: CGEventType
 --  -> CGEventFlags
 --  -> CGEventType
@@ -23,17 +26,17 @@ foreign import ccall safe "workflow.h pressKey"               objc_pressKey
 --  -> Word32
 --  -> IO ()
 
-foreign import ccall safe "workflow.h getClipboard"           objc_getClipboard
+foreign import ccall safe "workflow.h getClipboard"           c_getClipboard
  :: IO CString
 
-foreign import ccall safe "workflow.h setClipboard"           objc_setClipboard
+foreign import ccall safe "workflow.h setClipboard"           c_setClipboard
  :: CString
  -> IO ()
 
-foreign import ccall safe "workflow.h openURL"                objc_openURL
+foreign import ccall safe "workflow.h openURL"                c_openURL
  :: CString
  -> IO ()
 
-foreign import ccall safe "workflow.h openApplication"        objc_openApplication
+foreign import ccall safe "workflow.h openApplication"        c_openApplication
  :: CString
  -> IO ()

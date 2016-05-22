@@ -1,4 +1,7 @@
 {-# LANGUAGE ViewPatterns #-}
+{-| low-level bindings, with Haskell types.
+
+-}
 module Workflow.OSX.Bindings where
 import Workflow.OSX.Foreign
 import Workflow.OSX.Marshall
@@ -15,36 +18,36 @@ currentApplication = do -- TODO munge, default to Global
 -- |
 -- TODO Applications whose name/paths have Unicode characters may or may not marshall correctly. they should, unless we need CWString.
 currentApplicationPath :: IO String
-currentApplicationPath = objc_currentApplicationPath >>= peekCString
+currentApplicationPath = c_currentApplicationPath >>= peekCString
 
 -- |
 pressKey :: [Modifier] -> Key -> IO ()
 pressKey (marshallModifiers -> flags) (marshallKey -> key) =
- objc_pressKey flags key
+ c_pressKey flags key
 
 -- TODO |
 -- clickMouse :: [Modifier] -> Positive -> MouseButton -> IO ()
--- clickMouse (MouseClick (marshallModifiers -> flags) (marshallPositive -> n) (marshallButton -> button)) = objc_clickMouse
+-- clickMouse (MouseClick (marshallModifiers -> flags) (marshallPositive -> n) (marshallButton -> button)) = c_clickMouse
 
 -- |
 getClipboard :: IO ClipboardText
-getClipboard = objc_getClipboard >>= peekCString
+getClipboard = c_getClipboard >>= peekCString
 
 -- |
 --
 -- note: unlike the keyboard shortcuts of 'copy',
 -- contents don't show up in Alfred's clipboard history.
 setClipboard :: ClipboardText -> IO ()
-setClipboard s = withCString s objc_setClipboard
+setClipboard s = withCString s c_setClipboard
 
 -- |
 openURL :: URL -> IO ()
-openURL s = withCString s objc_openURL
+openURL s = withCString s c_openURL
 
 -- |
 openApplication :: Application -> IO ()
-openApplication s = withCString s objc_openApplication
+openApplication s = withCString s c_openApplication
 
 -- holdKeyFor :: Int -> [Modifier] -> Key -> IO ()
 -- holdKeyFor milliseconds (marshallModifiers -> flags) (marshallKey -> key) =
---  objc_pressKeyDown flags key
+--  c_pressKeyDown flags key

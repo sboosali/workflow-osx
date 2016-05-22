@@ -102,8 +102,8 @@ module Workflow.OSX
  ) where
    --TODO non-aliased for docs
 import Workflow.OSX.Types     as X
--- import Workflow.OSX.Bindings -- names conflict with Workflow.OSX.DSL
 import Workflow.OSX.Foreign   as X
+-- import Workflow.OSX.Bindings  as X -- after mving out WorkflowF
 import Workflow.OSX.Constants as X
-import Workflow.OSX.Execute   as X
 import Workflow.OSX.Marshall  as X
+import Workflow.OSX.Execute   as X

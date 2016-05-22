@@ -1,4 +1,10 @@
 {-# LANGUAGE LambdaCase #-}
+{-|
+
+glue the "virtual" virtual keys ('Key' and 'Modifier')
+to "actual" virtual keys (operating system constants).
+
+-}
 module Workflow.OSX.Marshall where
 import Workflow.OSX.Constants
 import Workflow.OSX.Types
