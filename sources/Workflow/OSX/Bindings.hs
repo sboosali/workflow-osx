@@ -19,12 +19,12 @@ currentApplicationPath = objc_currentApplicationPath >>= peekCString
 
 -- |
 pressKey :: [Modifier] -> Key -> IO ()
-pressKey (encodeModifiers -> flags) (encodeKey -> key) =
+pressKey (marshallModifiers -> flags) (marshallKey -> key) =
  objc_pressKey flags key
 
 -- TODO |
 -- clickMouse :: [Modifier] -> Positive -> MouseButton -> IO ()
--- clickMouse (MouseClick (encodeModifiers -> flags) (encodePositive -> n) (encodeButton -> button)) = objc_clickMouse
+-- clickMouse (MouseClick (marshallModifiers -> flags) (marshallPositive -> n) (marshallButton -> button)) = objc_clickMouse
 
 -- |
 getClipboard :: IO ClipboardText
@@ -46,5 +46,5 @@ openApplication :: Application -> IO ()
 openApplication s = withCString s objc_openApplication
 
 -- holdKeyFor :: Int -> [Modifier] -> Key -> IO ()
--- holdKeyFor milliseconds (encodeModifiers -> flags) (encodeKey -> key) =
+-- holdKeyFor milliseconds (marshallModifiers -> flags) (marshallKey -> key) =
 --  objc_pressKeyDown flags key

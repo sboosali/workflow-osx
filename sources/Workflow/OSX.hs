@@ -98,11 +98,12 @@ transformClipboard f = do
 
 -}
 module Workflow.OSX
- ( module Export_
+ ( module X
  ) where
-import Workflow.OSX.Types     as Export_
+   --TODO non-aliased for docs
+import Workflow.OSX.Types     as X
 -- import Workflow.OSX.Bindings -- names conflict with Workflow.OSX.DSL
-import Workflow.OSX.Foreign   as Export_
-import Workflow.OSX.Constants as Export_
-import Workflow.OSX.Execute   as Export_
-import Workflow.OSX.Marshall  as Export_
+import Workflow.OSX.Foreign   as X
+import Workflow.OSX.Constants as X
+import Workflow.OSX.Execute   as X
+import Workflow.OSX.Marshall  as X
