@@ -49,7 +49,7 @@ toCGEventFlags = \case
 
 relates Haskell types with Objective-C types:
 
-* Haskell 'VirtualKey' ~ Objective-C @CGKeyCode@
+* Haskell 'Key' ~ Objective-C @CGKeyCode@
 * Haskell 'CUShort' ~ Objective-C @uint16_t@
 * Haskell can marshal 'CUShort'
 

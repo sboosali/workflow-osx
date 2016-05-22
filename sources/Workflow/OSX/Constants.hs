@@ -19,7 +19,7 @@ see:
  *  Discussion:
  *    These constants are the virtual keycodes defined originally in
  *    Inside Mac Volume V, pg. V-191. They identify physical keys on a
- *    keyboard. Those constants with "ANSI" in the name are labeled
+ *    keyboard. Those constants with \"ANSI\" in the name are labeled
  *    according to the key position on an ANSI-standard US keyboard.
  *    For example, kVK_ANSI_A indicates the virtual keycode for the key
  *    with the letter 'A' in the US keyboard layout. Other keyboard
