@@ -9,7 +9,6 @@ import Control.Monad.Trans.State
 
 import Control.Concurrent             (threadDelay)
 
-import Data.Foldable                  (traverse_)
 import Data.List                      (intercalate)
 import Data.Monoid                    ((<>))
 import Control.Monad.IO.Class
@@ -78,8 +77,8 @@ runWorkflowT = iterT go
  go :: WorkflowF (m a) -> m a
  go = \case
 
-  SendKeyChord    flags key k      -> runSendKeyChord flags key >> k
-  SendText        s k              -> runSendText s >> k
+  SendKeyChord    flags key k      -> liftIO (Cocoa.pressKey flags key) >> k
+  SendText        s k              -> liftIO (Cocoa.sendText s) >> k
   -- TODO support Unicode by inserting "directly"
   -- terminates because sendTextAsKeypresses is exclusively a sequence of SendKeyChord'es
 
@@ -95,22 +94,6 @@ runWorkflowT = iterT go
   Delay           t k              -> liftIO (threadDelay (t*1000)) >> k
  -- 1,000 µs is 1ms
 
-{-|
-
-TODO support Unicode by inserting directly, not indirectly via keypresses
-https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/EventOverview/HandlingKeyEvents/HandlingKeyEvents.html
-Most key events—that is, those representing characters to be inserted as text—are dispatched by the NSWindow object associated with the key window to the first responder.
-characters and charactersIgnoringModifiers—The responder can extract the Unicode character data associated with the event and insert it as text or interpret it as commands. The charactersIgnoringModifiers method ignores any modifier keystroke (except for Shift) when returning the character data. Note that both method names are plural because a keystroke can produce more than one character (for example, “à” is composed of ‘a’ and ‘`‘).
-isARepeat—This method tells the responder whether the same key was pressed rapidly in succession.
-
--}
-runSendText :: (MonadIO m) => String -> m ()
-runSendText
- = traverse_ (uncurry runSendKeyChord)
- . concatMap char2keypress
-
-runSendKeyChord :: (MonadIO m) => [Modifier] -> Key -> m ()
-runSendKeyChord flags key = liftIO $ Cocoa.pressKey flags key
 
 {- | shows the "static" data flow of some 'Workflow', by showing its primitive operations, in @do-notation@.
 
