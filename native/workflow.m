@@ -240,3 +240,22 @@ CFRelease(eventDown);
 CFRelease(eventUp);
 
 }
+
+
+/*
+ CGEventCreateKeyboardEvent(CGEventSourceRef __nullable source, CGKeyCode virtualKey, bool keyDown)
+
+ */
+void sendUnichar (unichar c) {
+    CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+    CGEventRef down = CGEventCreateKeyboardEvent(source, 0, true);
+    CGEventRef up   = CGEventCreateKeyboardEvent(source, 0, false);
+
+    CGEventKeyboardSetUnicodeString(down, 1, &c);
+    CGEventPost(kCGHIDEventTap, down);
+    CGEventKeyboardSetUnicodeString(up, 1, &c);
+    CGEventPost(kCGHIDEventTap, up);
+
+    CFRelease(down);
+    CFRelease(up);
+}

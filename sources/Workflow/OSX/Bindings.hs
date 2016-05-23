@@ -3,12 +3,36 @@
 
 -}
 module Workflow.OSX.Bindings where
+import Workflow.OSX.Extra
 import Workflow.OSX.Foreign
 import Workflow.OSX.Marshall
 import Workflow.OSX.Types
 
 import Foreign.C.String                   (peekCString, withCString)
+import Data.Char (ord)
 
+
+sendText :: String -> IO ()
+-- sendText :: (MonadIO m) => String -> m ()
+sendText s = sequence_ $ intersperse (delayMilliseconds 30) (fmap sendChar s)
+
+{-| Haskell chars are Unicode code-points:
+
+>>> import Data.Char (ord)
+>>> map ord "abc"
+[97,98,99]
+>>> map ord "αβγ"
+[945,946,947]
+>>> [0x03B1,0x03B2,0x03B3]
+[945,946,947]
+
+TODO there are 1,000,000 hs chars, but UniChar only holds 2^16 ~ 65,000
+
+-}
+sendChar :: Char -> IO ()
+sendChar c = c_sendChar (unsafeIntToWord16 . ord $ c)
+-- sendChar :: (MonadIO m) => Char -> m ()
+-- sendChar c = liftIO $ c_sendChar (ord c)
 
 currentApplication :: IO Application
 currentApplication = do -- TODO munge, default to Global

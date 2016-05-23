@@ -10,6 +10,9 @@ import Foreign.C.Types             (CULLong (..), CUShort (..))
 -- import Data.Word (Word32)
 
 
+foreign import ccall safe "workflow.h sendUnichar"
+ c_sendChar :: UniChar -> IO ()
+
 foreign import ccall safe "workflow.h currentApplicationPath" c_currentApplicationPath
  :: IO CString
 

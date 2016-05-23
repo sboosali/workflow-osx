@@ -9,6 +9,7 @@ import Control.Monad.Trans.Free (FreeT)
 import Control.Monad.Free.Church  (F)
 import           Control.Monad.Catch          (MonadThrow)
 import Foreign.C.Types
+import Data.Word
 
 
 -- | a monad constraint for "workflow effects", (just like @MonadState@ is a monad constraint for "state effects") can use in any monad transformer stack that handles them.
@@ -86,6 +87,15 @@ type Time = Int
 
 -- class IsString TODO needs Free WorkflowF, which must be lifted, which isn't better than insert
 
+
+{-|
+
+@
+typedef unsigned short unichar;
+@
+
+-}
+type UniChar = Word16
 
 {- | relates a Haskell type with a Objective-C type:
 

@@ -5,6 +5,8 @@ this module declares only `patterns`.
 
 see:
 
+* <https://developer.apple.com/library/mac/documentation/Carbon/Reference/QuartzEventServicesRef/>
+
 * line 236 of
 </System/Library/Frameworks/IOKit.framework/Versions/A/Headers/hidsystem/IOLLEvent.h>
 
