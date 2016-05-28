@@ -10,11 +10,14 @@ import Workflow.OSX.Types
 
 import Foreign.C.String                   (peekCString, withCString)
 import Data.Char (ord)
+import Control.Monad.IO.Class
 
 
-sendText :: String -> IO ()
--- sendText :: (MonadIO m) => String -> m ()
-sendText s = sequence_ $ intersperse (delayMilliseconds 30) (fmap sendChar s)
+sendText :: (MonadIO m) => String -> m ()
+-- sendText :: (MonadIO m) => (Monad m  m) => String -> m ()
+sendText s = liftIO $
+ sequence_ $ intersperse (delayMilliseconds 30) (fmap sendChar s)
+ --NOTE must pause between events
 
 {-| Haskell chars are Unicode code-points:
 
@@ -29,49 +32,55 @@ sendText s = sequence_ $ intersperse (delayMilliseconds 30) (fmap sendChar s)
 TODO there are 1,000,000 hs chars, but UniChar only holds 2^16 ~ 65,000
 
 -}
-sendChar :: Char -> IO ()
-sendChar c = c_sendChar (unsafeIntToWord16 . ord $ c)
+sendChar :: (MonadIO m) => Char -> m ()
+sendChar c = liftIO $
+ c_sendChar (unsafeIntToWord16 . ord $ c)
 -- sendChar :: (MonadIO m) => Char -> m ()
 -- sendChar c = liftIO $ c_sendChar (ord c)
 
-currentApplication :: IO Application
-currentApplication = do -- TODO munge, default to Global
+currentApplication :: (MonadIO m) => m Application
+currentApplication = liftIO $ do
  path <- currentApplicationPath
  return path
 
 -- |
 -- TODO Applications whose name/paths have Unicode characters may or may not marshall correctly. they should, unless we need CWString.
-currentApplicationPath :: IO String
-currentApplicationPath = c_currentApplicationPath >>= peekCString
+currentApplicationPath :: (MonadIO m) => m String
+currentApplicationPath = liftIO $
+ c_currentApplicationPath >>= peekCString
 
 -- |
-pressKey :: [Modifier] -> Key -> IO ()
-pressKey (marshallModifiers -> flags) (marshallKey -> key) =
+pressKey :: (MonadIO m) => [Modifier] -> Key -> m ()
+pressKey (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
  c_pressKey flags key
 
 -- TODO |
--- clickMouse :: [Modifier] -> Positive -> MouseButton -> IO ()
+-- clickMouse :: (MonadIO m) => [Modifier] -> Positive -> MouseButton -> m ()
 -- clickMouse (MouseClick (marshallModifiers -> flags) (marshallPositive -> n) (marshallButton -> button)) = c_clickMouse
 
 -- |
-getClipboard :: IO ClipboardText
-getClipboard = c_getClipboard >>= peekCString
+getClipboard :: (MonadIO m) => m ClipboardText
+getClipboard = liftIO $
+ c_getClipboard >>= peekCString
 
 -- |
 --
 -- note: unlike the keyboard shortcuts of 'copy',
 -- contents don't show up in Alfred's clipboard history.
-setClipboard :: ClipboardText -> IO ()
-setClipboard s = withCString s c_setClipboard
+setClipboard :: (MonadIO m) => ClipboardText -> m ()
+setClipboard s = liftIO $
+ withCString s c_setClipboard
 
 -- |
-openURL :: URL -> IO ()
-openURL s = withCString s c_openURL
+openURL :: (MonadIO m) => URL -> m ()
+openURL s = liftIO $
+ withCString s c_openURL
 
 -- |
-openApplication :: Application -> IO ()
-openApplication s = withCString s c_openApplication
+openApplication :: (MonadIO m) => Application -> m ()
+openApplication s = liftIO $
+ withCString s c_openApplication
 
--- holdKeyFor :: Int -> [Modifier] -> Key -> IO ()
--- holdKeyFor milliseconds (marshallModifiers -> flags) (marshallKey -> key) =
+-- holdKeyFor :: (MonadIO m) => Int -> [Modifier] -> Key -> m ()
+-- holdKeyFor milliseconds (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
 --  c_pressKeyDown flags key

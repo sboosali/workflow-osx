@@ -77,8 +77,8 @@ runWorkflowT = iterT go
  go :: WorkflowF (m a) -> m a
  go = \case
 
-  SendKeyChord    flags key k      -> liftIO (Cocoa.pressKey flags key) >> k
-  SendText        s k              -> liftIO (Cocoa.sendText s) >> k
+  SendKeyChord    flags key k      -> Cocoa.pressKey flags key >> k
+  SendText        s k              -> Cocoa.sendText s >> k
   -- TODO support Unicode by inserting "directly"
   -- terminates because sendTextAsKeypresses is exclusively a sequence of SendKeyChord'es
 
@@ -86,12 +86,12 @@ runWorkflowT = iterT go
   SendMouseClick _ _ _ _  -> error "TODO: SendMouseClick"
   SendMouseScroll _ _ _ _ -> error "TODO: SendMouseScroll"
 
-  GetClipboard    f                -> liftIO (Cocoa.getClipboard) >>= f
-  SetClipboard    s k              -> liftIO (Cocoa.setClipboard s) >> k
+  GetClipboard    f                -> Cocoa.getClipboard >>= f
+  SetClipboard    s k              -> Cocoa.setClipboard s >> k
 
-  CurrentApplication f             -> liftIO (Cocoa.currentApplication) >>= f
-  OpenApplication app k            -> liftIO (Cocoa.openApplication app) >> k
-  OpenURL         url k            -> liftIO (Cocoa.openURL url) >> k
+  CurrentApplication f             -> Cocoa.currentApplication >>= f
+  OpenApplication app k            -> Cocoa.openApplication app >> k
+  OpenURL         url k            -> Cocoa.openURL url >> k
 
   Delay           t k              -> liftIO (threadDelay (t*1000)) >> k
  -- 1,000 µs is 1ms
