@@ -1,9 +1,9 @@
-{-# LANGUAGE LambdaCase, ScopedTypeVariables, FlexibleContexts #-}
+{-# LANGUAGE LambdaCase, ScopedTypeVariables, FlexibleContexts, RecordWildCards #-}
 module Workflow.OSX.Execute where
 import Workflow.OSX.Bindings as Cocoa
 import Workflow.OSX.Types
--- import Workflow.Types
--- import Workflow.Execute
+
+import Workflow.Core
 
 import Control.Monad.Free
 import Control.Monad.Trans.Free hiding (Pure, Free, iterM) -- TODO
@@ -20,30 +20,6 @@ runWorkflowWithDelay t = runWorkflowT . delayWorkflowT t . toFreeT
 
 runWorkflowWithDelayT :: (MonadIO m) => Int -> WorkflowT m a -> m a
 runWorkflowWithDelayT t = runWorkflowT . delayWorkflowT t
-
-{-| intersperse a delay between each action.
-
-@
-delayWorkflowT 1 $ do
- sendKeyChord [CommandModifier] VKey
- s <- getClipboard
- sendText s
-@
-
-is equivalent to:
-
-@
-do
- sendKeyChord [CommandModifier] VKey
- delay 1
- s <- getClipboard
- delay 1
- sendText s
-@
-
--}
-delayWorkflowT :: (Monad m) => Int -> WorkflowT m a -> WorkflowT m a
-delayWorkflowT t = intersperseT (Delay t ())
 
 {-|
 
@@ -70,34 +46,24 @@ runW = 'runMonadWorkflow' . getW
 
 -}
 runWorkflowT :: forall m a. (MonadIO m) => WorkflowT m a -> m a
--- runWorkflowT = runWorkflowByT osxDictionary
-runWorkflowT = iterT go
+runWorkflowT = runWorkflowByT osxWorkflowD
 
+{-|
+
+-}
+osxWorkflowD :: (MonadIO m) => WorkflowD m
+osxWorkflowD = WorkflowD{..}
  where
- go :: WorkflowF (m a) -> m a
- go = \case
 
-  SendKeyChord    flags key k      -> Cocoa.pressKey flags key >> k
-  SendText        s k              -> Cocoa.sendText s >> k
-  -- TODO support Unicode by inserting "directly"
-  -- terminates because sendTextAsKeypresses is exclusively a sequence of SendKeyChord'es
+ _sendKeyChord = Cocoa.pressKey
+ _sendText     = Cocoa.sendText
 
-  -- TODO SendMouseClick  flags n button k -> Cocoa.clickMouse flags n button >> k
-  SendMouseClick _ _ _ _  -> error "TODO: SendMouseClick"
-  SendMouseScroll _ _ _ _ -> error "TODO: SendMouseScroll"
+ _sendMouseClick  = error "TODO: Cocoa.clickMouse"
+ _sendMouseScroll = error "TODO: Cocoa.scrollMouse"
 
-  GetClipboard    f                -> Cocoa.getClipboard >>= f
-  SetClipboard    s k              -> Cocoa.setClipboard s >> k
+ _getClipboard = Cocoa.getClipboard
+ _setClipboard = Cocoa.setClipboard
 
-  CurrentApplication f             -> Cocoa.currentApplication >>= f
-  OpenApplication app k            -> Cocoa.openApplication app >> k
-  OpenURL         url k            -> Cocoa.openURL url >> k
-
-  Delay           t k              -> liftIO (threadDelay (t*1000)) >> k
- -- 1,000 µs is 1ms
-
--- osxDictionary :: (MonadIO m) => WorkflowD m
--- osxDictionary = WorkflowD{..}
---  where
---  _getClipboard =
---  _setClipboard s =
+ _currentApplication = Cocoa.currentApplication
+ _openApplication    = Cocoa.openApplication
+ _openURL            = Cocoa.openURL
