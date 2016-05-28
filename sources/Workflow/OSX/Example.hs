@@ -22,7 +22,7 @@ testAll = do
 
 attemptWorkflow a = do
  putStrLn "\n"
- putStrLn $ showWorkflow a
+ -- putStrLn $ showWorkflow a
  runWorkflow a
 
 testDerived = do
