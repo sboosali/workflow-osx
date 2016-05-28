@@ -39,7 +39,8 @@ marshallModifiers
 -}
 toCGEventFlags :: Modifier -> CGEventFlags
 toCGEventFlags = \case
-  CommandModifier  -> NX_COMMANDMASK
+  MetaModifier     -> NX_COMMANDMASK  --
+  HyperModifier    -> NX_COMMANDMASK  -- 
   ControlModifier  -> NX_CONTROLMASK
   ShiftModifier    -> NX_SHIFTMASK
   OptionModifier   -> NX_ALTERNATEMASK
@@ -117,7 +118,8 @@ toCGKeyCode = \case
  SpaceKey         -> VK_Space
  DeleteKey        -> VK_Delete
  EscapeKey        -> VK_Escape
- CommandKey       -> VK_Command
+ MetaKey          -> VK_Command --
+ HyperKey         -> VK_Command --
  ShiftKey         -> VK_Shift
  CapsLockKey      -> VK_CapsLock
  OptionKey        -> VK_Option

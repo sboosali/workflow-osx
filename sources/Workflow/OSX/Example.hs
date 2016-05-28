@@ -5,6 +5,8 @@ module Workflow.OSX.Example where
 -- import qualified Workflow.OSX.Bindings as OSX
 import Workflow.OSX
 
+import Workflow.Core
+
 import Control.Monad                 (replicateM_)
 
 {-

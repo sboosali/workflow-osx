@@ -6,7 +6,6 @@ module Workflow.OSX.Extra
  , module X
  ) where
 
-import           Control.Monad.Catch          (MonadThrow, throwM)
 import Control.DeepSeq (NFData)
 
 import Data.Data (Data)
@@ -17,9 +16,6 @@ import Data.List as X
 import Control.Concurrent (threadDelay)
 import Data.Word (Word16)
 
-
-failed :: (MonadThrow m) => String -> m a
-failed = throwM . userError
 
 delayMilliseconds :: Int -> IO ()
 delayMilliseconds t = threadDelay (t*1000)

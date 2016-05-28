@@ -83,6 +83,8 @@ runWorkflowT = iterT go
   -- terminates because sendTextAsKeypresses is exclusively a sequence of SendKeyChord'es
 
   -- TODO SendMouseClick  flags n button k -> Cocoa.clickMouse flags n button >> k
+  SendMouseClick _ _ _ _  -> error "TODO: SendMouseClick"
+  SendMouseScroll _ _ _ _ -> error "TODO: SendMouseScroll"
 
   GetClipboard    f                -> liftIO (Cocoa.getClipboard) >>= f
   SetClipboard    s k              -> liftIO (Cocoa.setClipboard s) >> k
