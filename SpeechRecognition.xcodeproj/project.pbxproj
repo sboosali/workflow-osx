@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E78B27E71CEF2F8E00523AE3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E78B27E61CEF2F8E00523AE3 /* main.m */; };
-		E78B27EF1CEF302D00523AE3 /* Recognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = E78B27EE1CEF302D00523AE3 /* Recognizer.m */; };
+		E78B27E71CEF2F8E00523AE3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E78B27E61CEF2F8E00523AE3 /* main.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		E78B27EF1CEF302D00523AE3 /* Recognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = E78B27EE1CEF302D00523AE3 /* Recognizer.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -245,6 +245,7 @@
 				E78B27EC1CEF2F8E00523AE3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

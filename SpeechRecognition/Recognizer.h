@@ -5,9 +5,11 @@
 #import <Foundation/Foundation.h>
 @import AppKit;
 
+////////////////////////////////////////////////////////////////////////////////
+
 @interface Recognizer : NSObject <NSSpeechRecognizerDelegate>
 
-@property NSSpeechRecognizer* recognizer;
+@property (retain) NSSpeechRecognizer* recognizer; // TODO nonatomic?
 
 - (id) init;
 - (void) setCommands:(NSArray<NSString*>*)commands;
@@ -18,4 +20,18 @@
 - (void) speechRecognizer:(NSSpeechRecognizer *)recognizer didRecognizeCommand:(NSString *)_recognition;
 
 @end
+
+////////////////////////////////////////////////////////////////////////////////
+
+Recognizer* new_NSSpeechRecognizer();
+
+void free_NSSpeechRecognizer(Recognizer*);
+
+void setCommands_NSSpeechRecognizer(Recognizer*, const char* []);
+
+void start_NSSpeechRecognizer(Recognizer*);
+
+void stop_NSSpeechRecognizer(Recognizer*);
+
+//void _NSSpeechRecognizer();
 

@@ -11,7 +11,7 @@
 
 
 int main(int argc, const char * argv[]) {
- @autoreleasepool {
+// @autoreleasepool {
 
      NSLog(@"-------------------");
      
@@ -21,7 +21,7 @@ int main(int argc, const char * argv[]) {
      [recognizer setCommands:@[@"stop listening",@"start listening"]];
      [recognizer start];
      
-    }
+//    }
     
     NSRunLoop *loop = [NSRunLoop currentRunLoop];
     while (1) {
