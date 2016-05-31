@@ -33,10 +33,12 @@ see:
 
 -}
 module Workflow.OSX.Constants where
-import Workflow.OSX.Types (CGEventFlags, CGKeyCode)
+import Workflow.OSX.Types (CGEventFlags, CGEventType, CGMouseButton, CGKeyCode)
 
+--------------------------------------------------------------------------------
+-- Modifiers
 
---- device-independent
+-- device-independent
 
 pattern NX_SHIFTMASK :: CGEventFlags
 pattern NX_SHIFTMASK = 0x00020000
@@ -58,6 +60,51 @@ pattern NX_SECONDARYFNMASK = 0x00800000
 -- yes: #define NX_CONTROLMASK 0x00040000
 -- no: #define NX_DEVICELCTLKEYMASK 0x00000001
 -- no: #define NX_DEVICERCTLKEYMASK 0x00002000
+
+--------------------------------------------------------------------------------
+-- /* mouse events */
+
+pattern NX_LMOUSEDOWN    :: CGEventType
+pattern NX_LMOUSEDOWN     = 1  -- /* left mouse-down event */
+
+pattern NX_LMOUSEUP    :: CGEventType
+pattern NX_LMOUSEUP     = 2   -- /* left mouse-up event */
+
+pattern NX_RMOUSEDOWN    :: CGEventType
+pattern NX_RMOUSEDOWN     = 3  -- /* right mouse-down event */
+
+pattern NX_RMOUSEUP    :: CGEventType
+pattern NX_RMOUSEUP     =  4 -- /* right mouse-up event */
+
+pattern NX_MOUSEMOVED    :: CGEventType
+pattern NX_MOUSEMOVED     = 5  -- /* mouse-moved event */
+
+pattern NX_LMOUSEDRAGGED    :: CGEventType
+pattern NX_LMOUSEDRAGGED  = 6  -- /* left mouse-dragged event */
+
+pattern NX_RMOUSEDRAGGED    :: CGEventType
+pattern NX_RMOUSEDRAGGED  = 7 -- /*  right mouse-dragged event */
+
+pattern NX_MOUSEENTERED    :: CGEventType
+pattern NX_MOUSEENTERED   = 8 -- /* mouse-entered event */
+
+pattern NX_MOUSEEXITED    :: CGEventType
+pattern NX_MOUSEEXITED     = 9 -- /* mouse-exited event */
+
+--------------------------------------------------------------------------------
+-- Mouse
+
+pattern CGMouseButtonLeft   :: CGMouseButton
+pattern CGMouseButtonLeft    = 0
+
+pattern CGMouseButtonRight  :: CGMouseButton
+pattern CGMouseButtonRight   = 1
+
+pattern CGMouseButtonCenter :: CGMouseButton
+pattern CGMouseButtonCenter  = 2
+
+--------------------------------------------------------------------------------
+-- Keys
 
 {-
 

@@ -1,7 +1,9 @@
 #import <Cocoa/Cocoa.h>
 
-#import "workflow.h"
+#import "Workflow.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// private helpers
 
 /* appInfo
 
@@ -33,8 +35,6 @@ https://developer.apple.com/library/mac/documentation/Carbon/Reference/QuartzEve
 void CGEventPostToPSN ( void *processSerialNumber, CGEventRef event );
 */
 
-
-// private helpers
 
 NSString* fromUTF8(const char* s) {
  return [[NSString alloc]
@@ -96,8 +96,11 @@ ProcessSerialNumber currentApplicationPSN() {
   return psn;
 }
 
+void getCursorPosition(CGPoint* p) {
+    *p = CGEventGetLocation(CGEventCreate(NULL));
+}
 
-
+////////////////////////////////////////////////////////////////////////////////
 // public
 
 const char* currentApplicationPath() {
@@ -213,34 +216,48 @@ void openURL(const char* url) {
 }
 
 
-// CGEventRef CGEventCreateMouseEvent ( CGEventSourceRef source, CGEventType mouseType, CGPoint mouseCursorPosition, CGMouseButton mouseButton );
-// http://stackoverflow.com/questions/1117065/cocoa-getting-the-current-mouse-position-on-the-screen
-void clickMouse(CGEventFlags modifiers, CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp, UInt32 numClicks) {
+/*
 
-  CGPoint currentPosition = CGEventGetLocation(CGEventCreate(NULL));
+https://developer.apple.com/library/mac/documentation/Carbon/Reference/QuartzEventServicesRef
+CGEventRef CGEventCreateMouseEvent ( CGEventSourceRef source, CGEventType mouseType, CGPoint mouseCursorPosition, CGMouseButton mouseButton );
 
-  CGEventRef eventDown = CGEventCreateMouseEvent(NULL, kCGEventOtherMouseDown, currentPosition, mouseButton);
-  CGEventRef eventUp   = CGEventCreateMouseEvent(NULL, kCGEventOtherMouseUp,   currentPosition, mouseButton);
+http://stackoverflow.com/questions/1117065/cocoa-getting-the-current-mouse-position-on-the-screen
 
-// hold down modifiers
-CGEventSetFlags(eventDown, modifiers);
-CGEventSetFlags(eventUp,   modifiers);
+*/
+void clickMouseAt
+(CGEventFlags modifiers, UInt32 numClicks, CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp, CGPoint p) {
 
-// click numClicks times. each click must say which it is (1st, 2nd, 3rd, etc)
+    CGPoint currentPosition = CGEventGetLocation(CGEventCreate(NULL));
 
-for (int nthClick=1; nthClick<=numClicks; nthClick++) {
-  CGEventSetIntegerValueField(eventDown, kCGMouseEventClickState, nthClick);
-  CGEventSetIntegerValueField(eventUp,   kCGMouseEventClickState, nthClick);
-  CGEventPost(kCGHIDEventTap, eventDown);
-  CGEventPost(kCGHIDEventTap, eventUp);
- }
+    CGEventRef eventDown = CGEventCreateMouseEvent(NULL, mouseDown, currentPosition, mouseButton);
+    CGEventRef eventUp   = CGEventCreateMouseEvent(NULL, mouseUp,   currentPosition, mouseButton);
 
-// free memory
-CFRelease(eventDown);
-CFRelease(eventUp);
+    // hold down modifiers
+    CGEventSetFlags(eventDown, modifiers);
+    CGEventSetFlags(eventUp,   modifiers);
 
+    // click numClicks times. each click must say which it is (1st, 2nd, 3rd, etc)
+
+    for (int nthClick=1; nthClick<=numClicks; nthClick++) {
+        CGEventSetIntegerValueField(eventDown, kCGMouseEventClickState, nthClick);
+        CGEventPost(kCGHIDEventTap, eventDown);
+
+        CGEventSetIntegerValueField(eventUp,   kCGMouseEventClickState, nthClick);
+        CGEventPost(kCGHIDEventTap, eventUp);
+        [NSThread sleepForTimeInterval:0.30f]; //30ms
+    }
+
+    // free memory
+    CFRelease(eventDown);
+    CFRelease(eventUp);
 }
 
+void clickMouse
+(CGEventFlags modifiers, UInt32 numClicks, CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp) {
+    CGPoint p;
+    getCursorPosition(&p);
+    clickMouseAt(modifiers,  numClicks,  mouseButton,  mouseDown,  mouseUp, p);
+}
 
 /*
  CGEventCreateKeyboardEvent(CGEventSourceRef __nullable source, CGKeyCode virtualKey, bool keyDown)

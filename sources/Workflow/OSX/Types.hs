@@ -12,6 +12,18 @@ import Data.Word
 
 {-|
 
+relates a Haskell type with a Objective-C type:
+
+* Objective-C defines @typedef unsigned int UInt32;@
+* in @MacTypes.h@
+
+-}
+type UInt32 = Word32
+
+{-| a UTF-16 encoded unicode character.
+
+TODO i.e. not codepoint like Char?
+
 @
 typedef unsigned short unichar;
 @
@@ -19,43 +31,50 @@ typedef unsigned short unichar;
 -}
 type UniChar = Word16
 
-{- | relates a Haskell type with a Objective-C type:
+{- | a virtual key.
+
+relates a Haskell type with a Objective-C type:
 
 * Objective-C defines @typedef unsigned short uint16_t;@
-* line 34 of </System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers/CGRemoteOperation.h> defines @typedef uint16_t CGKeyCode;@
+* line 34 of
+</System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers/CGRemoteOperation.h>
+defines @typedef uint16_t CGKeyCode;@
 
 -}
-type CGKeyCode     = CUShort --TODO newtype
+type CGKeyCode = CUShort
+
+{- | a set of modifiers.
+
+relates a Haskell type with a Objective-C type:
+
+* Objective-C defines @typedef unsigned long long uint64_t;@
+* line 98 of
+</System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers/CGEventTypes.h>
+defines @typedef uint64_t CGEventFlags;@
+(@typedef CF_ENUM(uint64_t, CGEventFlags)@).
+
+-}
+type CGEventFlags  = CULLong
+
+{- | an event (like key/mouse up/down).
+
+relates a Haskell type with a Objective-C type:
+
+* @typedef CF_ENUM(uint32_t, CGEventType) { ... }@
+* in
+</System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers/CGEventTypes.h>
+
+-}
+type CGEventType = Word32
 
 {- | relates a Haskell type with a Objective-C type:
 
-* Objective-C defines @typedef unsigned long long uint64_t;@
-* line 98 of </System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers/CGEventTypes.h> defines @typedef uint64_t CGEventFlags;@
+* @typedef CF_ENUM(uint32_t, CGMouseButton) { ... }@
+* in
+</System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework/Versions/A/Headers/CGEventTypes.h>
 
 -}
-type CGEventFlags  = CULLong --TODO newtype
-
--- {- | relates a Haskell type with a Objective-C type:
-
-
--- -}
--- type CGEventType   =
-
--- {- | relates a Haskell type with a Objective-C type:
-
-
--- -}
--- type CGMouseButton =
-
-
--- data MouseClick = MouseClick [Modifier] Positive MouseButton
---  deriving (Show,Eq,Ord)
-
--- data MouseButton = LeftButton | MiddleButton | RightButton
---  deriving (Show,Eq,Ord,Enum,Bounded)
-
--- data KeyChord = KeyChord [Modifier] Key
---  deriving (Show,Eq,Ord)
+type CGMouseButton = Word32
 
 --------------------------------------------------------------------------------
 -- compat

@@ -2,22 +2,28 @@
 {-# OPTIONS_GHC -fno-warn-missing-signatures -fno-warn-unused-binds -fno-warn-unused-matches #-}
 -- | some example workflows you can derive from the primitives in 'Workflow'. (see the source)
 module Workflow.OSX.Example where
--- import qualified Workflow.OSX.Bindings as OSX
+import qualified Workflow.OSX.Bindings as Cocoa
 import Workflow.OSX
 
 import Workflow.Core
 
 import Control.Monad                 (replicateM_)
 
-{-
+{- |
+
+@
 stack build && stack exec -- workflow-osx-example
+@
+
 -}
 main = do
  -- attemptWorkflow testDerived
  -- ttemptWorkflow testChrome
  -- attemptWorkflow testDSL
- attemptWorkflow testAll
- -- OSX.sendText "aα"
+ -- attemptWorkflow testAll
+ -- Cocoa.sendText "aα"
+
+ Cocoa.clickMouse 0 2 (CGMouseButtonLeft,NX_LMOUSEDOWN,NX_LMOUSEUP)
 
 testAll = do
   insert "aα"

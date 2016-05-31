@@ -6,9 +6,7 @@ import Workflow.OSX.Types
 import Workflow.Core
 
 import Control.Monad.Free
-import Control.Monad.Trans.Free hiding (Pure, Free, iterM) -- TODO
 
-import Control.Concurrent             (threadDelay)
 import Control.Monad.IO.Class
 
 

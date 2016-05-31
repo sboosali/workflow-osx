@@ -1,9 +1,9 @@
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
 
-#import "objc_workflow.h"
+#import "Workflow.h"
 
-/* 
+/*
 [NSThread sleepForTimeInterval:(30 / 1000.0f)];
   NSLog(@" count is %lu",[appInfos count]);
     NSLog(@" path is %@", [appInfo objectForKey:@"NSApplicationPath"]);
@@ -13,7 +13,7 @@
 int main(int argc, char** argv)
 {
 
-  // // doesn't work, and catastrophically disabled mouse input within the app it sent the mouseclick to 
+  // // doesn't work, and catastrophically disabled mouse input within the app it sent the mouseclick to
   // clickMouse(0, kCGMouseButtonLeft, kCGEventLeftMouseDown, kCGEventLeftMouseUp, 2);
   // clickMouse(kCGEventFlagMaskControl, kCGMouseButtonLeft, 0, 0, 1);
   // kCGEventOtherMouseDown, kCGEventOtherMouseDragged, or kCGEventOtherMouseUp
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 //  // just name
 //   ProcessSerialNumber* psn2 = getApplicationPSN("Google Chrome");
 //   pressKeyTo(0, kVK_ANSI_X, *psn2);
- 
+
 //   //  doesn't crash
 //   ProcessSerialNumber* psn3 = getApplicationPSN("doesn't exist");
 //   pressKeyTo(0, kVK_ANSI_X, *psn3);
