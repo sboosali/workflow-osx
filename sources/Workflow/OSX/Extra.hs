@@ -1,15 +1,15 @@
 -- | assorted functionality, imported by most modules in this package.
 module Workflow.OSX.Extra
  ( module Workflow.OSX.Extra
- , Data, Generic, NFData
  , (<>), traverse_
  , module X
  ) where
 
-import Control.DeepSeq (NFData)
+import Control.DeepSeq as X (NFData)
+import Data.Hashable as X (Hashable)
 
-import Data.Data (Data)
-import           GHC.Generics                 (Generic)
+import Data.Data as X (Data)
+import           GHC.Generics               as X  (Generic)
 import           Data.Foldable                   (traverse_)
 import Data.Monoid        ((<>))
 import Data.List as X

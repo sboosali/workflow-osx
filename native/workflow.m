@@ -96,10 +96,6 @@ ProcessSerialNumber currentApplicationPSN() {
   return psn;
 }
 
-void getCursorPosition(CGPoint* p) {
-    *p = CGEventGetLocation(CGEventCreate(NULL));
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // public
 
@@ -215,22 +211,30 @@ void openURL(const char* url) {
    openURL:[NSURL URLWithString: fromUTF8(url)]];
 }
 
-
 /*
+
+http://stackoverflow.com/questions/1117065/cocoa-getting-the-current-mouse-position-on-the-screen
 
 https://developer.apple.com/library/mac/documentation/Carbon/Reference/QuartzEventServicesRef
 CGEventRef CGEventCreateMouseEvent ( CGEventSourceRef source, CGEventType mouseType, CGPoint mouseCursorPosition, CGMouseButton mouseButton );
 
-http://stackoverflow.com/questions/1117065/cocoa-getting-the-current-mouse-position-on-the-screen
+ CGPointMake(CGFloat x, CGFloat y)
+ {
+ CGPoint p; p.x = x; p.y = y; return p;
+ }
 
-*/
+ */
 void clickMouseAt
-(CGEventFlags modifiers, UInt32 numClicks, CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp, CGPoint p) {
 
-    CGPoint currentPosition = CGEventGetLocation(CGEventCreate(NULL));
+(CGEventFlags modifiers,
+ UInt32 numClicks,
+ CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp,
+ CGFloat x, CGFloat y) {
 
-    CGEventRef eventDown = CGEventCreateMouseEvent(NULL, mouseDown, currentPosition, mouseButton);
-    CGEventRef eventUp   = CGEventCreateMouseEvent(NULL, mouseUp,   currentPosition, mouseButton);
+    CGPoint p = CGPointMake(x,y);
+
+    CGEventRef eventDown = CGEventCreateMouseEvent(NULL, mouseDown, p, mouseButton);
+    CGEventRef eventUp   = CGEventCreateMouseEvent(NULL, mouseUp,   p, mouseButton);
 
     // hold down modifiers
     CGEventSetFlags(eventDown, modifiers);
@@ -256,7 +260,7 @@ void clickMouse
 (CGEventFlags modifiers, UInt32 numClicks, CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp) {
     CGPoint p;
     getCursorPosition(&p);
-    clickMouseAt(modifiers,  numClicks,  mouseButton,  mouseDown,  mouseUp, p);
+    clickMouseAt(modifiers,  numClicks,  mouseButton,  mouseDown,  mouseUp, p.x,  p.y);
 }
 
 /*
@@ -275,4 +279,25 @@ void sendUnichar (unichar c) {
 
     CFRelease(down);
     CFRelease(up);
+}
+
+void getCursorPosition(CGPoint* p) {
+    *p = CGEventGetLocation(CGEventCreate(NULL));
+}
+
+/*
+ http://stackoverflow.com/questions/8059667/set-the-mouse-location
+ */
+void setCursorPosition(CGFloat x, CGFloat y) {
+    // CGPoint p;
+    // p.x = x;
+    // p.y = y;
+
+    CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
+    CGEventRef mouse = CGEventCreateMouseEvent (NULL, kCGEventMouseMoved, CGPointMake(x,y), 0);
+
+    CGEventPost(kCGHIDEventTap, mouse);
+
+    CFRelease(mouse);
+    CFRelease(source);
 }

@@ -33,7 +33,7 @@ see:
 
 -}
 module Workflow.OSX.Constants where
-import Workflow.OSX.Types (CGEventFlags, CGEventType, CGMouseButton, CGKeyCode)
+import Workflow.OSX.Types (CGEventFlags, CGEventType, OSXMouseButton, CGMouseButton, CGKeyCode)
 
 --------------------------------------------------------------------------------
 -- Modifiers
@@ -62,6 +62,19 @@ pattern NX_SECONDARYFNMASK = 0x00800000
 -- no: #define NX_DEVICERCTLKEYMASK 0x00002000
 
 --------------------------------------------------------------------------------
+-- Mouse
+
+pattern OSXLeftButton   :: OSXMouseButton
+pattern OSXLeftButton    = (CGMouseButtonLeft,  NX_LMOUSEDOWN,  NX_LMOUSEUP)
+
+pattern OSXRightButton  :: OSXMouseButton
+pattern OSXRightButton   = (CGMouseButtonRight, NX_RMOUSEDOWN,  NX_RMOUSEUP)
+
+pattern OSXMiddleButton :: OSXMouseButton
+pattern OSXMiddleButton  = (CGMouseButtonCenter, NX_OMOUSEDOWN, NX_OMOUSEUP) -- TODO "other" is "center"?
+
+-- CGEventType
+
 -- /* mouse events */
 
 pattern NX_LMOUSEDOWN    :: CGEventType
@@ -91,8 +104,22 @@ pattern NX_MOUSEENTERED   = 8 -- /* mouse-entered event */
 pattern NX_MOUSEEXITED    :: CGEventType
 pattern NX_MOUSEEXITED     = 9 -- /* mouse-exited event */
 
---------------------------------------------------------------------------------
--- Mouse
+{-/* other mouse events
+ *
+ * event.data.mouse.buttonNumber should contain the
+ * button number (2-31) changing state.
+ */-}
+
+pattern NX_OMOUSEDOWN    :: CGEventType
+pattern NX_OMOUSEDOWN     = 25 -- /* other mouse-down event */
+
+pattern NX_OMOUSEUP       :: CGEventType
+pattern NX_OMOUSEUP       = 26 -- /* other mouse-up event */
+
+pattern NX_OMOUSEDRAGGED :: CGEventType
+pattern NX_OMOUSEDRAGGED  = 27 -- /* other mouse-dragged event */
+
+-- CGMouseButton
 
 pattern CGMouseButtonLeft   :: CGMouseButton
 pattern CGMouseButtonLeft    = 0

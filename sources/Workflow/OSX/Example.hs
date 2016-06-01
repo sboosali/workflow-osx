@@ -22,8 +22,12 @@ main = do
  -- attemptWorkflow testDSL
  -- attemptWorkflow testAll
  -- Cocoa.sendText "aα"
+ testMouse
 
- Cocoa.clickMouse 0 2 (CGMouseButtonLeft,NX_LMOUSEDOWN,NX_LMOUSEUP)
+testMouse = do
+ Cocoa.clickMouse 0 2 OSXLeftButton
+ delayMilliseconds 30
+ Cocoa.clickMouseAt 0 1 OSXLeftButton (CGPoint 0 0)
 
 testAll = do
   insert "aα"

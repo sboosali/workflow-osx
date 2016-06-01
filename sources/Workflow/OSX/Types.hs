@@ -5,7 +5,10 @@ module Workflow.OSX.Types
  ) where
 
 import Workflow.Types
+import Workflow.OSX.Extra
 
+import Foreign (Storable(..))
+import Foreign.CStorable (CStorable(..))
 import Foreign.C.Types
 import Data.Word
 
@@ -76,6 +79,95 @@ type CGEventType = Word32
 -}
 type CGMouseButton = Word32
 
+{-|
+
+-}
+type OSXMouseButton = (CGMouseButton, CGEventType, CGEventType)
+
+{-|
+
+@<CoreGraphics/CGBase.h>@ defines:
+
+@
+#if defined(__LP64__) && __LP64__
+# define CGFLOAT_TYPE double
+# define CGFLOAT_IS_DOUBLE 1
+# define CGFLOAT_MIN DBL_MIN
+# define CGFLOAT_MAX DBL_MAX
+#else
+# define CGFLOAT_TYPE float
+# define CGFLOAT_IS_DOUBLE 0
+# define CGFLOAT_MIN FLT_MIN
+# define CGFLOAT_MAX FLT_MAX
+#endif
+
+typedef CGFLOAT_TYPE CGFloat;
+@
+
+-}
+type CGFloat = Double
+
+{-|
+
+@<CoreGraphics/CGGeometry.h>@ defines:
+
+@
+struct CGPoint {
+    CGFloat x;
+    CGFloat y;
+};
+typedef struct CGPoint CGPoint;
+@
+
+-}
+data CGPoint = CGPoint
+ { xCGPoint :: CGFloat
+ , yCGPoint :: CGFloat
+ } deriving (Show,Read,Eq,Ord,Data,Generic,NFData,Hashable,CStorable)
+
+instance Storable CGPoint where
+ peek      = cPeek
+ poke      = cPoke
+ alignment = cAlignment
+ sizeOf    = cSizeOf
+
+{-
+
+@
+struct CGSize {
+    CGFloat width;
+    CGFloat height;
+};
+typedef struct CGSize CGSize;
+@
+
+-}
+
+{-
+
+@
+struct CGVector {
+    CGFloat dx;
+    CGFloat dy;
+};
+typedef struct CGVector CGVector;
+@
+
+-}
+
+{-
+
+@
+struct CGRect {
+    CGPoint origin;
+    CGSize size;
+};
+typedef struct CGRect CGRect;
+@
+
+-}
+
+
 --------------------------------------------------------------------------------
 -- compat
 
@@ -84,8 +176,10 @@ type KeyRiff  = KeySequence
 
 type ClipboardText = Clipboard
 
+-- | @CommandModifier = 'MetaModifier'@ (also could be @CommandModifier = 'HyperModifier@)
 pattern CommandModifier :: Modifier
-pattern CommandModifier = MetaModifier -- and Hyper
+pattern CommandModifier = MetaModifier
 
+-- | @CommandKey = 'MetaKey'@ (also could be @CommandKey = 'HyperKey@)
 pattern CommandKey :: Key
-pattern CommandKey = MetaKey -- and Hyper
+pattern CommandKey = MetaKey

@@ -8,17 +8,39 @@ import Workflow.OSX.Foreign
 import Workflow.OSX.Marshall
 import Workflow.OSX.Types
 
+import Foreign
+import Foreign.C
 import Foreign.C.String                   (peekCString, withCString)
 import Data.Char (ord)
 import Control.Monad.IO.Class
 import Numeric.Natural
+import Control.Exception (bracket,bracket_)
 
+--------------------------------------------------------------------------------
+-- Workflow types
 
 sendText :: (MonadIO m) => String -> m ()
 -- sendText :: (MonadIO m) => (Monad m  m) => String -> m ()
 sendText s = liftIO $
  sequence_ $ intersperse (delayMilliseconds 30) (fmap sendChar s)
  --NOTE must pause between events
+
+-- |
+sendKeyChord_ :: (MonadIO m) => [Modifier] -> Key -> m () --TODO Only this identifier's ambiguous with wf types?
+sendKeyChord_ (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
+  c_pressKey flags key
+
+sendMouseClick :: (MonadIO m) => [Modifier] -> Natural -> MouseButton -> m ()
+sendMouseClick (marshallModifiers -> flags) times (marshallButton -> button) =
+ clickMouse flags times button
+
+-- sendMouseScroll
+-- sendMouseScroll =
+
+pressKey :: (MonadIO m) => [Modifier] -> Key -> m ()
+pressKey = sendKeyChord_ --TODO rm
+
+--------------------------------------------------------------------------------
 
 {-| Haskell chars are Unicode code-points:
 
@@ -39,10 +61,7 @@ sendChar c = liftIO $
 -- sendChar :: (MonadIO m) => Char -> m ()
 -- sendChar c = liftIO $ c_sendChar (ord c)
 
--- |
-pressKey :: (MonadIO m) => [Modifier] -> Key -> m ()
-pressKey (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
- c_pressKey flags key
+--------------------------------------------------------------------------------
 
 -- | e.g. @clickMouse 0 1 (CGMouseButtonLeft,NX_LMOUSEDOWN,NX_LMOUSEUP)@
 clickMouse
@@ -51,17 +70,35 @@ clickMouse
  -> Natural
  -> (CGMouseButton,CGEventType,CGEventType) -- ^ must be consistent
  -> m ()
-clickMouse modifiers (unsafeNatToWord32 -> times) (button,downEvent,upEvent)
- = liftIO $ do
-    c_clickMouse modifiers times button downEvent upEvent
+clickMouse modifiers times button = liftIO $ do
+ p <- getCursorPosition
+ clickMouseAt modifiers times button p
 
 --old
   --  with $ \p ->
   --     c_clickMouseAt modifiers button downEvent upEvent times
 
+-- | e.g. @clickMouse 0 1 (CGMouseButtonLeft,NX_LMOUSEDOWN,NX_LMOUSEUP)@
+clickMouseAt
+ :: (MonadIO m)
+ => CGEventFlags
+ -> Natural
+ -> (CGMouseButton,CGEventType,CGEventType) -- ^ must be consistent
+ -> CGPoint
+ -> m ()
+clickMouseAt
+ modifiers
+ (unsafeNatToWord32 -> times) --TODO bound
+ (button,downEvent,upEvent)
+ (CGPoint x y)
+ = liftIO $ do
+     c_clickMouseAt modifiers times button downEvent upEvent x y
+
 -- TODO |
 -- clickMouse :: (MonadIO m) => [Modifier] -> Positive -> MouseButton -> m ()
 -- clickMouse (MouseClick (marshallModifiers -> flags) (marshallPositive -> n) (marshallButton -> button)) = c_clickMouse
+
+--------------------------------------------------------------------------------
 
 -- |
 getClipboard :: (MonadIO m) => m ClipboardText
@@ -75,6 +112,8 @@ getClipboard = liftIO $
 setClipboard :: (MonadIO m) => ClipboardText -> m ()
 setClipboard s = liftIO $
  withCString s c_setClipboard
+
+--------------------------------------------------------------------------------
 
 currentApplication :: (MonadIO m) => m Application
 currentApplication = liftIO $ do
@@ -97,6 +136,35 @@ openApplication :: (MonadIO m) => Application -> m ()
 openApplication s = liftIO $
  withCString s c_openApplication
 
+--------------------------------------------------------------------------------
+
+{-| find the mouse.
+
+-}
+getCursorPosition :: (MonadIO m) => m CGPoint
+getCursorPosition = liftIO $ do
+ getByReference c_getCursorPosition
+
+{-| move the mouse.
+
+(doesn't trigger @RSIGuard@'s @AutoClick@).
+
+-}
+setCursorPosition :: (MonadIO m) => CGPoint -> m ()
+setCursorPosition (CGPoint x y) = liftIO $ do
+  c_setCursorPosition x y
+
+--------------------------------------------------------------------------------
+
 -- holdKeyFor :: (MonadIO m) => Int -> [Modifier] -> Key -> m ()
 -- holdKeyFor milliseconds (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
 --  c_pressKeyDown flags key
+
+{- for reference-parameter "getters" (unary).
+
+-}
+getByReference :: (Storable a) => (Ptr a -> IO ()) -> IO a
+getByReference setReference = bracket
+ malloc
+ free
+ (\p -> setReference p >> peek p)

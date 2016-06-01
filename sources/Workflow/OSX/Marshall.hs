@@ -40,11 +40,20 @@ marshallModifiers
 toCGEventFlags :: Modifier -> CGEventFlags
 toCGEventFlags = \case
   MetaModifier     -> NX_COMMANDMASK  --
-  HyperModifier    -> NX_COMMANDMASK  -- 
+  HyperModifier    -> NX_COMMANDMASK  --
   ControlModifier  -> NX_CONTROLMASK
   ShiftModifier    -> NX_SHIFTMASK
   OptionModifier   -> NX_ALTERNATEMASK
   FunctionModifier -> NX_SECONDARYFNMASK
+
+{-|
+
+-}
+marshallButton :: MouseButton -> OSXMouseButton
+marshallButton = \case
+ LeftButton   -> OSXLeftButton
+ MiddleButton -> OSXMiddleButton --TODO correct?
+ RightButton  -> OSXRightButton
 
 {- | marshall the 'keycode'
 

@@ -70,10 +70,10 @@ source-repository head
 
 
 library
-    hs-source-dirs: sources
-
     if !os(osx)
        buildable: False
+
+    hs-source-dirs: sources
 
     exposed-modules:
         Workflow.OSX
@@ -98,7 +98,10 @@ library
 
         , free
         , exceptions
+
         , deepseq
+        , hashable
+        , c-storable-deriving
 
     default-language:   Haskell2010
     ghc-options:        -Wall

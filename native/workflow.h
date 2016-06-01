@@ -5,6 +5,7 @@
 #import <Cocoa/Cocoa.h>
 
 ////////////////////////////////////////////////////////////////////////////////
+// public
 
 void sendUnichar (unichar c);
 
@@ -13,7 +14,11 @@ void pressKeyToCurrentApplication(CGEventFlags modifiers, CGKeyCode key);
 void pressKeyTo(CGEventFlags modifiers, CGKeyCode key, ProcessSerialNumber psn);
 
 void clickMouseAt
-(CGEventFlags modifiers, UInt32 numClicks, CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp, CGPoint p);
+(CGEventFlags modifiers,
+ UInt32 numClicks,
+ CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp,
+ CGFloat x, CGFloat y);
+
 void clickMouse
 (CGEventFlags modifiers, UInt32 numClicks, CGMouseButton mouseButton, CGEventType mouseDown, CGEventType mouseUp);
 
@@ -25,9 +30,12 @@ void openApplication(const char* s);
 
 void openURL(const char* url);
 
-////////////////////////////////////////////////////////////////////////////////
+void getCursorPosition(CGPoint* p);
+void setCursorPosition(CGFloat x, CGFloat y);
 
-void getCursorPosition (CGPoint*);
+////////////////////////////////////////////////////////////////////////////////
+// private
+
 ProcessSerialNumber* getApplicationPSN(const char* s);
 
 #endif
