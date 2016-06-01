@@ -25,9 +25,14 @@ main = do
  testMouse
 
 testMouse = do
- Cocoa.clickMouse 0 2 OSXLeftButton
- delayMilliseconds 30
- Cocoa.clickMouseAt 0 1 OSXLeftButton (CGPoint 0 0)
+ -- Cocoa.clickMouse 0 2 OSXLeftButton
+ -- delayMilliseconds 30
+ -- Cocoa.clickMouseAt 0 1 OSXLeftButton (CGPoint 0 0)
+
+ -- other *is* middle button.
+ -- middle-click in terminal pastes the most recently selected text.
+ delayMilliseconds 1000
+ Cocoa.clickMouse 0 1 OSXMiddleButton
 
 testAll = do
   insert "aα"
