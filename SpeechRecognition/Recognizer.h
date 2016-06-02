@@ -15,18 +15,12 @@
 
 @interface Recognizer : NSObject <NSSpeechRecognizerDelegate>
 
-@property (retain, readonly) NSSpeechRecognizer* recognizer; // TODO nonatomic?
-@property void* callback; // void(NSString*)
+@property (retain, atomic) NSSpeechRecognizer* recognizer;
+@property void(*handler)(const char*); // void(NSString*)
 
 - (id) init;
-- (void) setCommands:(NSArray<NSString*>*)commands;
-- (NSArray<NSString*>*) setCommands;
-
-- (void) start;
-- (void) stop;
 
 - (void) speechRecognizer:(NSSpeechRecognizer *)recognizer didRecognizeCommand:(NSString *)_recognition;
-- (void) registerCallback:(void*)callback;
 
 @end
 
@@ -36,11 +30,10 @@ Recognizer* new_NSSpeechRecognizer();
 
 void free_NSSpeechRecognizer(Recognizer*);
 
-void setCommands_NSSpeechRecognizer(Recognizer*, const char* []);
-
 void start_NSSpeechRecognizer(Recognizer*);
 
 void stop_NSSpeechRecognizer(Recognizer*);
 
-//void _NSSpeechRecognizer();
+void setCommands_NSSpeechRecognizer(Recognizer*, const char* []);
 
+void setHandler_NSSpeechRecognizer(Recognizer* this, void(*handler)(const char*));

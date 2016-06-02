@@ -9,17 +9,19 @@
 //    return 0;
 //}
 
+void PrintRecognition(const char* s) {
+    printf("[RECOGNIZED] %s\n", s);
+}
 
 int main(int argc, const char * argv[]) {
 // @autoreleasepool {
 
-     NSLog(@"-------------------");
-     
-     //Recognizer* recognizer = [[Recognizer alloc] initWithCommands:@[@"stop listening",@"start listening"]];
-     
-     Recognizer* recognizer = [Recognizer new];
-     [recognizer setCommands:@[@"stop listening",@"start listening"]];
-     [recognizer start];
+    NSLog(@"-------------------");
+    
+    Recognizer* r = [Recognizer new];
+    r.handler = PrintRecognition;
+    [r.recognizer setCommands:@[@"stop listening",@"start listening"]];
+    [r.recognizer startListening];
      
 //    }
     
@@ -31,3 +33,4 @@ int main(int argc, const char * argv[]) {
 
     return 0;
 }
+
