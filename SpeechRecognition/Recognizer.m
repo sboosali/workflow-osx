@@ -14,6 +14,8 @@
         self.recognizer.blocksOtherRecognizers  = YES;
         self.recognizer.delegate                = self;
         self.recognizer.commands                = @[];
+        
+        self.callback = 0;
     }
     
     return self;
@@ -21,6 +23,10 @@
 
 - (void) setCommands:(NSArray<NSString*>*)commands {
     self.recognizer.commands = commands;
+}
+
+- (NSArray<NSString*>*) getCommands {
+    return self.recognizer.commands;
 }
 
 - (void) start {
@@ -33,9 +39,12 @@
 }
 
 - (void) speechRecognizer:(NSSpeechRecognizer *)recognizer didRecognizeCommand:(NSString*) recognition {
-        // NSString* recognition = (NSString*) _recognition;
-        NSLog(@"RECOGNIZED: %@", recognition);
-        // POST(recognition);
+    NSLog(@"RECOGNIZED: %@", recognition);
+    self.callback(recognition);
+}
+
+- (void) registerCallback:(void*) callback {
+    self.callback = callback;
 }
 
 @end
