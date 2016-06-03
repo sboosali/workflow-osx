@@ -11,6 +11,7 @@ void PrintRecognition(const char* s) {
 //    [r.recognizer setCommands:@[@"stop listening",@"start listening"]];
 
 int main(int argc, const char * argv[]) {
+    NSLog(@"----------------");
     
     const int length = 2;
     const char* commands[length];

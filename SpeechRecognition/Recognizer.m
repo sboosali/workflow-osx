@@ -24,20 +24,44 @@ NSArray<NSString*>*_  ~  char*_[]
 //    return [NSString stringWithCString:s encoding:NSUTF8StringEncoding];
 //}
 
-void fromUTF8(const char* c, NSString* ns) {
-    ns = [NSString stringWithCString:c encoding:NSUTF8StringEncoding];
-}
+//void fromUTF8(const char* c, NSString* ns) {
+//    ns = [NSString stringWithCString:c encoding:NSUTF8StringEncoding];
+//}
+//
+//const char* toUTF8(NSString* s) {
+//    return [s cStringUsingEncoding:NSUTF8StringEncoding];
+//}
+//
+//int length(void* a[]) {
+//    int i = 0;
+//    while (a[i] != NULL) {
+//        i++;
+//    }
+//    return i;
+//}
 
-const char* toUTF8(NSString* s) {
-    return [s cStringUsingEncoding:NSUTF8StringEncoding];
-}
-
-int length(void* a[]) {
-    int i = 0;
-    while (a[i] != NULL) {
-        i++;
+/*
+ input: c_array_of_c_strings, length
+ output: ns_array_of_ns_strings
+ 
+ you own the output
+ */
+NSArray<NSString*>* c2NSStringArray(const char* c_array_of_c_strings[], int length)
+{
+    NSArray<NSString*>* ns_array_of_ns_strings;
+    NSString*            c_array_of_ns_strings[length];
+    
+    NSString*  ns_string;
+    const char* c_string;
+    
+    for (int i = 0; i < length; i++) {
+        c_string = c_array_of_c_strings[i];
+        ns_string = [NSString stringWithCString:c_string encoding:NSUTF8StringEncoding];
+        c_array_of_ns_strings[i] = ns_string;
     }
-    return i;
+    
+    ns_array_of_ns_strings = [NSArray arrayWithObjects:c_array_of_ns_strings count:(NSUInteger)length];
+    return ns_array_of_ns_strings;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,23 +112,12 @@ void stop_NSSpeechRecognizer(Recognizer* this) {
     [this.recognizer stopListening];
 }
 
-// const char* _[] is an array of strings
-void setCommands_NSSpeechRecognizer(Recognizer* this, const char* givenCommands[], int length){
-    NSArray<NSString*>* ns_array_of_ns_strings;
-    NSString*            c_array_of_ns_strings[length];
-
-    NSString*  ns_string;
-    const char* c_string;
- 
-    for (int i = 0; i < length; i++) {
-        c_string = givenCommands[i];
-        ns_string = [NSString stringWithCString:c_string encoding:NSUTF8StringEncoding];
-        c_array_of_ns_strings[i] = ns_string;
-    }
+// {{ const char* _[] }} is an array of strings
+// {{ void* a[l] }} is a "variable length arrays". its lifetime is the block's.
+void setCommands_NSSpeechRecognizer(Recognizer* this, const char* _commands[], int length){
+    NSArray<NSString*>* commands = c2NSStringArray(_commands, length);
     
-    ns_array_of_ns_strings = [NSArray arrayWithObjects:c_array_of_ns_strings count:(NSUInteger)length];
-    
-    this.recognizer.commands = ns_array_of_ns_strings;
+    this.recognizer.commands = commands;
 }
 
 void setHandler_NSSpeechRecognizer(Recognizer* this, void(*handler)(const char*)){
