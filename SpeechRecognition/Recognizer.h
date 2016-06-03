@@ -34,6 +34,8 @@ void start_NSSpeechRecognizer(Recognizer*);
 
 void stop_NSSpeechRecognizer(Recognizer*);
 
-void setCommands_NSSpeechRecognizer(Recognizer*, const char* []);
+void setCommands_NSSpeechRecognizer(Recognizer*, const char* [], int length);
 
 void setHandler_NSSpeechRecognizer(Recognizer* this, void(*handler)(const char*));
+
+////////////////////////////////////////////////////////////////////////////////

@@ -1,36 +1,29 @@
 #import <Foundation/Foundation.h>
 #import "Recognizer.h"
 
-//int main(int argc, const char * argv[]) {
-//    @autoreleasepool {
-//        // insert code here...
-//        NSLog(@"Hello, World!");
-//    }
-//    return 0;
-//}
-
 void PrintRecognition(const char* s) {
     printf("[RECOGNIZED] %s\n", s);
 }
 
-int main(int argc, const char * argv[]) {
-// @autoreleasepool {
+//NOTE concurrently: command&control overrides dictation, dictation can stil be recognized.
 
-    NSLog(@"-------------------");
+// @autoreleasepool {}
+//    [r.recognizer setCommands:@[@"stop listening",@"start listening"]];
+
+int main(int argc, const char * argv[]) {
+    
+    const int length = 2;
+    const char* commands[length];
+    commands[0] = "stop listening";
+    commands[1] = "start listening";
     
     Recognizer* r = [Recognizer new];
-    r.handler = PrintRecognition;
-    [r.recognizer setCommands:@[@"stop listening",@"start listening"]];
-    [r.recognizer startListening];
-     
-//    }
+    setHandler_NSSpeechRecognizer(r, PrintRecognition);
+    setCommands_NSSpeechRecognizer(r, commands, length);
+    start_NSSpeechRecognizer(r);
     
     NSRunLoop *loop = [NSRunLoop currentRunLoop];
-    while (1) {
-        [loop run];
-    }
-
-
+    [loop run];
     return 0;
 }
 

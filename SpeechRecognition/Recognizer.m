@@ -7,7 +7,7 @@
 
 /*
  
- "NSArray<NSString*>*" "char*[]"
+NSArray<NSString*>*_  ~  char*_[]
  
  */
 //NSArray<NSString*>* toNSStringArray(const char* _strings[]) { //TODO in haskell
@@ -30,6 +30,14 @@ void fromUTF8(const char* c, NSString* ns) {
 
 const char* toUTF8(NSString* s) {
     return [s cStringUsingEncoding:NSUTF8StringEncoding];
+}
+
+int length(void* a[]) {
+    int i = 0;
+    while (a[i] != NULL) {
+        i++;
+    }
+    return i;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,13 +88,23 @@ void stop_NSSpeechRecognizer(Recognizer* this) {
     [this.recognizer stopListening];
 }
 
-void setCommands_NSSpeechRecognizer(Recognizer* this, const char* givenCommands[]){
-//    NSArray<NSString*>* previousCommands = this.recognizer.commands;
-//    
-//    NSArray<NSString*>* currentCommands = toNSStringArray(givenCommands);
-//    this.recognizer.commands = currentCommands;
-//
-//    [previousCommands release]; // the block isn't atomic, we must save and free.
+// const char* _[] is an array of strings
+void setCommands_NSSpeechRecognizer(Recognizer* this, const char* givenCommands[], int length){
+    NSArray<NSString*>* ns_array_of_ns_strings;
+    NSString*            c_array_of_ns_strings[length];
+
+    NSString*  ns_string;
+    const char* c_string;
+ 
+    for (int i = 0; i < length; i++) {
+        c_string = givenCommands[i];
+        ns_string = [NSString stringWithCString:c_string encoding:NSUTF8StringEncoding];
+        c_array_of_ns_strings[i] = ns_string;
+    }
+    
+    ns_array_of_ns_strings = [NSArray arrayWithObjects:c_array_of_ns_strings count:(NSUInteger)length];
+    
+    this.recognizer.commands = ns_array_of_ns_strings;
 }
 
 void setHandler_NSSpeechRecognizer(Recognizer* this, void(*handler)(const char*)){
