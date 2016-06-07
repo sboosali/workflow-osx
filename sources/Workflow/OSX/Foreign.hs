@@ -12,6 +12,7 @@ import Foreign.C.Types             (CULLong(..), CUShort(..))
 
 {-
 
+{-| -}
 foreign import ccall safe "Workflow.h xxx" c_xxx
  ::
  -> IO ()
@@ -26,6 +27,26 @@ foreign import ccall safe "Workflow.h pressKey"               c_pressKey
  -> CGKeyCode
  -> IO ()
 
+foreign import ccall safe "Workflow.h pressKeyDown"               c_pressKeyDown
+ :: CGEventFlags
+ -> CGKeyCode
+ -> IO ()
+
+foreign import ccall safe "Workflow.h pressKeyUp"               c_pressKeyUp
+ :: CGEventFlags
+ -> CGKeyCode
+ -> IO ()
+
+{-| @
+void clickMouseAt
+(CGEventFlags  modifiers,
+ UInt32        numClicks,
+ CGMouseButton mouseButton,
+ CGEventType   mouseDown,
+ CGEventType   mouseUp,
+ CGFloat       x,
+ CGFloat       y);
+@-}
 foreign import ccall safe "Workflow.h clickMouseAt"           c_clickMouseAt
  :: CGEventFlags
  -> UInt32

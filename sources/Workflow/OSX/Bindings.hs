@@ -26,9 +26,17 @@ sendText s = liftIO $
  --NOTE must pause between events
 
 -- |
-sendKeyChord_ :: (MonadIO m) => [Modifier] -> Key -> m () --TODO Only this identifier's ambiguous with wf types?
-sendKeyChord_ (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
+sendKeyChord_flags :: (MonadIO m) => [Modifier] -> Key -> m () --TODO Only this identifier's ambiguous with wf types?
+sendKeyChord_flags (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
   c_pressKey flags key
+
+-- |
+sendKeyChord_holding :: (MonadIO m) => [Modifier] -> Key -> m () --TODO Only this identifier's ambiguous with wf types?
+sendKeyChord_holding
+ (fmap modifier2key -> fmap marshallKey -> mods)
+ (marshallKey -> key)
+ = liftIO $
+  pressKeyChord mods key
 
 sendMouseClick :: (MonadIO m) => [Modifier] -> Natural -> MouseButton -> m ()
 sendMouseClick (marshallModifiers -> flags) times (marshallButton -> button) =
@@ -37,8 +45,6 @@ sendMouseClick (marshallModifiers -> flags) times (marshallButton -> button) =
 -- sendMouseScroll
 -- sendMouseScroll =
 
-pressKey :: (MonadIO m) => [Modifier] -> Key -> m ()
-pressKey = sendKeyChord_ --TODO rm
 
 --------------------------------------------------------------------------------
 
@@ -156,6 +162,41 @@ setCursorPosition (CGPoint x y) = liftIO $ do
 
 --------------------------------------------------------------------------------
 
+-- pressKey :: (MonadIO m) => CGKeyCode -> m ()
+-- pressKey key = liftIO $ do
+--  pressKeyDown key
+--  pressKeyUp   key
+
+pressKeyChord :: (MonadIO m) => [CGKeyCode] -> CGKeyCode -> m () --TODO rn KeyChord
+pressKeyChord modifiers key = liftIO $ do
+  holdingKeys modifiers $ do
+      pressKeyDown key
+      pressKeyUp   key
+
+{- perform an action while holding down some keys (e.g. modifiers).
+
+via 'bracket_', the keys are released even when an exception is raised.
+
+-}
+holdingKeys :: [CGKeyCode] -> IO () -> IO ()
+holdingKeys keys = bracket_
+ (pressKeyDown `traverse_` keys)
+ (pressKeyUp   `traverse_` keys)
+
+-- holdingKeys :: (MonadIO m) => [CGKeyCode] -> m () -> m ()
+-- holdingKeys keys action = liftIO $ bracket_
+--  (pressKeyDown `traverse_` keys)
+--  (pressKeyUp   `traverse_` keys)
+--  action
+
+pressKeyDown :: CGKeyCode -> IO ()
+pressKeyDown = c_pressKeyDown 0
+
+pressKeyUp :: CGKeyCode -> IO ()
+pressKeyUp = c_pressKeyUp 0
+
+--------------------------------------------------------------------------------
+
 -- holdKeyFor :: (MonadIO m) => Int -> [Modifier] -> Key -> m ()
 -- holdKeyFor milliseconds (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
 --  c_pressKeyDown flags key
@@ -168,3 +209,5 @@ getByReference setReference = bracket
  malloc
  free
  (\p -> setReference p >> peek p)
+
+--------------------------------------------------------------------------------

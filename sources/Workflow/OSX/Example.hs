@@ -12,17 +12,26 @@ import Control.Monad                 (replicateM_)
 {- |
 
 @
-stack build && stack exec -- workflow-osx-example
+stack build && stack exec -- example-workflow-osx
 @
 
 -}
 main = do
+  delayMilliseconds 1000
+
+  attemptWorkflow testHolding
  -- attemptWorkflow testDerived
- -- ttemptWorkflow testChrome
+ -- attemptWorkflow testChrome
  -- attemptWorkflow testDSL
  -- attemptWorkflow testAll
  -- Cocoa.sendText "aα"
- testMouse
+ -- testMouse
+
+testHolding = do
+  -- press "H-t"
+  s <- copy
+  insert "w"
+  -- insert s
 
 testMouse = do
  -- Cocoa.clickMouse 0 2 OSXLeftButton

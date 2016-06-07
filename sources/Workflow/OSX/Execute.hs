@@ -53,8 +53,9 @@ osxWorkflowD :: (MonadIO m) => WorkflowD m
 osxWorkflowD = WorkflowD{..}
  where
 
- _sendKeyChord = Cocoa.sendKeyChord_
  _sendText     = Cocoa.sendText
+ -- _sendKeyChord = Cocoa.sendKeyChord_holding
+ _sendKeyChord = Cocoa.sendKeyChord_flags
 
  _sendMouseClick  = Cocoa.sendMouseClick
  _sendMouseScroll = error "TODO: Cocoa.sendMouseScroll"

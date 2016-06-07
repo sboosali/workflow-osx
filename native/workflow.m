@@ -96,6 +96,15 @@ ProcessSerialNumber currentApplicationPSN() {
   return psn;
 }
 
+//
+NSArray<NSDictionary*>* getApplications() {
+  return [[NSWorkspace sharedWorkspace] launchedApplications];  // runningApplications
+}
+
+NSDictionary* getCurrentApplication () {
+  return [[NSWorkspace sharedWorkspace] activeApplication]; // frontmostApplication
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // public
 
@@ -107,7 +116,7 @@ const char* currentApplicationPath() {
 
 // can be full path (e.g. "/Applications/Work.app"), or just the name (e.g. "Work")
 void openApplication(const char* s) {
-  [[NSWorkspace sharedWorkspace] launchApplication:fromUTF8(s)];
+  [[NSWorkspace sharedWorkspace] launchApplication:fromUTF8(s)]; // TODO Is this freed Once the block exits? Like a local declaration.
 }
 
 // simulates a key press from the keyboard. works in pop-ups like Alfred.

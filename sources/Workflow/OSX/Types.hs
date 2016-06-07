@@ -167,6 +167,48 @@ typedef struct CGRect CGRect;
 
 -}
 
+{-|
+@
+struct ProcessSerialNumber { unsigned long highLongOfPSN; unsigned long lowLongOfPSN; };
+@
+
+<https://developer.apple.com/legacy/library/documentation/Carbon/Reference/Process_Manager/index.html#//apple_ref/doc/c_ref/ProcessSerialNumber>
+
+-}
+data ProcessSerialNumber = ProcessSerialNumber
+ { _highLongOfPSN :: CULong
+ , _lowLongOfPSN  :: CULong
+ }
+
+{-|
+
+E.G. In Objective-C:
+
+ @
+ // via NSLog(@"%@", ...);
+
+ NSDictionary: {
+ NSApplicationBundleIdentifier = "org.gnu.Emacs";
+ NSApplicationName = Emacs;
+ NSApplicationPath = "/Applications/Notes.app";
+ NSApplicationProcessIdentifier = 40831;
+ NSApplicationProcessSerialNumberHigh = 0;
+ NSApplicationProcessSerialNumberLow = 4195328;
+ NSWorkspaceApplicationKey = "<NSRunningApplication: 0x7fe3c0e08b30 (org.gnu.Emacs - 40831)>";
+ }
+ @
+
+-}
+data ApplicationInformation = ApplicationInformation
+  { nsApplicationName :: String
+  , nsApplicationPath :: String
+  , nsApplicationBundleIdentifier :: String
+  , nsApplicationProcessIdentifier :: Word --TODO
+  , nsApplicationProcessSerialNumber :: ProcessSerialNumber
+  , nsWorkspaceApplicationKey :: NSRunningApplication --TODO
+  }
+
+type NSRunningApplication = () --TODO
 
 --------------------------------------------------------------------------------
 -- compat

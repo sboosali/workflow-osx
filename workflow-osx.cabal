@@ -108,9 +108,9 @@ library
     default-extensions: AutoDeriveTypeable, DeriveDataTypeable, DeriveFunctor, DeriveGeneric
 
     include-dirs:     native
-    includes:         native/workflow.h
-    install-includes: native/workflow.h
-    c-sources:        native/workflow.m
+    includes:         native/Workflow.h
+    install-includes: native/Workflow.h
+    c-sources:        native/Workflow.m
 
     cc-options: -Wno-deprecated-declarations
     --  the functionality I needed was found only in some deprecated APIs
@@ -118,7 +118,7 @@ library
     frameworks: Cocoa
 
 
-executable workflow-osx-example
+executable example-workflow-osx
     if !os(osx)
        buildable: False
 
@@ -135,5 +135,5 @@ executable workflow-osx-example
     ghc-options:      -Wall
 
     build-depends:
-        base ==4.8.*
+        base >=4.7 && <5.0
       , workflow-osx
