@@ -22,7 +22,7 @@ main = do
  putStrLn "Workflow.OSX.Example..."
  delayMilliseconds 1000
 
- -- attemptWorkflow testInsert -- Works
+ attemptWorkflow testInsert -- Works
  attemptWorkflow testDerived -- Doesn't work
 
  -- attemptWorkflow testHolding
@@ -35,7 +35,9 @@ main = do
 attemptWorkflow a = do
  putStrLn "\n"
  -- putStrLn $ showWorkflow a
- runWorkflow defaultOSXWorkflowConfig{osxHowToSendText = SendTextByChar} a
+ runWorkflow
+   defaultOSXWorkflowConfig{osxHowToSendText = SendTextByChar, osxStepDelay = 1000}
+   a
 
 cut :: (MonadWorkflow m) => m String
 cut = do
@@ -69,6 +71,7 @@ testMouse = do
 testInsert = do
   insert "aα"
 
+-- it worked once! and then it didn't.
 testDerived = do
  s <- cut
  delay 30

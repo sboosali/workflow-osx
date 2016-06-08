@@ -3,6 +3,7 @@ module Workflow.OSX.Extra
  ( module Workflow.OSX.Extra
  , module X
  ) where
+import Workflow.Types (MilliSeconds)
 
 import Control.DeepSeq as X (NFData)
 import Data.Hashable as X (Hashable)
@@ -29,3 +30,6 @@ unsafeIntToWord16 = fromInteger . toInteger
 -- | may overflow.
 unsafeNatToWord32 :: Natural -> Word32
 unsafeNatToWord32 = fromInteger . toInteger
+
+nat2ms :: Natural -> MilliSeconds
+nat2ms = fromIntegral

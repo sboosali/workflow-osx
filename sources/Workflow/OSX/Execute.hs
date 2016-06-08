@@ -9,20 +9,27 @@ import Workflow.Core
 import Data.Default.Class
 
 import Control.Monad.Free
+import Control.Monad.Trans.Free (intersperseT)
 
 import Control.Monad.IO.Class
 
 --------------------------------------------------------------------------------
 
+{-|
+
+All delays are in milliseconds.
+
+-}
 data OSXWorkflowConfig = OSXWorkflowConfig
  { osxHowToSendText :: HowToSendText
- , osxDelays        :: OSXDelays
+ , osxStepDelay     :: Natural
  }
  deriving (Show,Read,Eq,Ord,Data,Generic)
 instance NFData OSXWorkflowConfig
 
 -- | 'defaultOSXWorkflowConfig'
-instance Default OSXWorkflowConfig where def = defaultOSXWorkflowConfig
+instance Default OSXWorkflowConfig where
+   def = defaultOSXWorkflowConfig
 
 {- | How to execute 'sendText'.
 
@@ -38,43 +45,33 @@ data HowToSendText = SendTextByChar | SendTextByKey | SendTextByClipboard
 instance NFData HowToSendText
 
 -- | 'defaultHowToSendText'
-instance Default HowToSendText where def = defaultHowToSendText
-
-{-| All delays are in milliseconds.
-
--}
-newtype OSXDelays = OSXDelays
- { osxStepDelay :: Natural  -- ^ The delay between each step of the free monad
- }
- deriving (Show,Read,Eq,Ord,Num,Data,Generic)
-instance NFData OSXDelays
-
--- | 'defaultOSXDelays'
-instance Default OSXDelays where def = defaultOSXDelays
+instance Default HowToSendText where
+   def = defaultHowToSendText
 
 {-|@
 'osxHowToSendText' = 'defaultOSXHowToSendText'
-'osxDelays'        = 'defaultOSXDelays'
+'osxStepDelay'     = 'defaultOSXStepDelay'
 @-}
 defaultOSXWorkflowConfig :: OSXWorkflowConfig
 defaultOSXWorkflowConfig = OSXWorkflowConfig{..}
  where
  osxHowToSendText = defaultHowToSendText
- osxDelays        = defaultOSXDelays
+ osxStepDelay     = defaultOSXStepDelay
 
-{-|@
+{-|
+
+@
 = 'SendTextByKey'
 @-}
 defaultHowToSendText :: HowToSendText
 defaultHowToSendText = SendTextByKey
 
-{-|@
-'osxStepDelays' = 0
-@-}
-defaultOSXDelays :: OSXDelays
-defaultOSXDelays = OSXDelays {..}
- where
- osxStepDelay = 0
+{-| no delay.
+
+@=0@
+-}
+defaultOSXStepDelay :: Natural
+defaultOSXStepDelay = 0
 
 --------------------------------------------------------------------------------
 
@@ -119,9 +116,15 @@ runW = 'runMonadWorkflow' . getW
 
 -}
 runWorkflowT :: forall m a. (MonadIO m) => OSXWorkflowConfig -> WorkflowT m a -> m a
-runWorkflowT config = runWorkflowByT _dictionary
+runWorkflowT config@OSXWorkflowConfig{..}
+   = _delay
+ >>> runWorkflowByT _dictionary
+
  where
  _dictionary = osxWorkflowD config
+ _delay = case osxStepDelay of
+   0 -> id -- optimization
+   t -> intersperseT (Delay (nat2ms t) ())  -- (`delay` is too general, requiring unnecessary constraints)
 
 {-|
 
