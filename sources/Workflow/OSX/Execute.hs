@@ -1,4 +1,4 @@
-{-# LANGUAGE LambdaCase, ScopedTypeVariables, FlexibleContexts, RecordWildCards #-}
+{-# LANGUAGE LambdaCase, ScopedTypeVariables, FlexibleContexts, RecordWildCards, GeneralizedNewtypeDeriving #-}
 module Workflow.OSX.Execute where
 import Workflow.OSX.Extra
 import Workflow.OSX.Bindings as Cocoa
@@ -16,10 +16,13 @@ import Control.Monad.IO.Class
 
 data OSXWorkflowConfig = OSXWorkflowConfig
  { osxHowToSendText :: HowToSendText
- , osxDelay         :: Natural
+ , osxDelays        :: OSXDelays
  }
  deriving (Show,Read,Eq,Ord,Data,Generic)
 instance NFData OSXWorkflowConfig
+
+-- | 'defaultOSXWorkflowConfig'
+instance Default OSXWorkflowConfig where def = defaultOSXWorkflowConfig
 
 {- | How to execute 'sendText'.
 
@@ -34,18 +37,44 @@ data HowToSendText = SendTextByChar | SendTextByKey | SendTextByClipboard
  deriving (Show,Read,Eq,Ord,Enum,Bounded,Data,Generic)
 instance NFData HowToSendText
 
--- | 'defaultOSXWorkflowConfig'
-instance Default OSXWorkflowConfig where def = defaultOSXWorkflowConfig
+-- | 'defaultHowToSendText'
+instance Default HowToSendText where def = defaultHowToSendText
+
+{-| All delays are in milliseconds.
+
+-}
+newtype OSXDelays = OSXDelays
+ { osxStepDelay :: Natural  -- ^ The delay between each step of the free monad
+ }
+ deriving (Show,Read,Eq,Ord,Num,Data,Generic)
+instance NFData OSXDelays
+
+-- | 'defaultOSXDelays'
+instance Default OSXDelays where def = defaultOSXDelays
 
 {-|@
-'osxHowToSendText' = 'SendTextByKey'
-'osxDelay'         = 0
+'osxHowToSendText' = 'defaultOSXHowToSendText'
+'osxDelays'        = 'defaultOSXDelays'
 @-}
 defaultOSXWorkflowConfig :: OSXWorkflowConfig
 defaultOSXWorkflowConfig = OSXWorkflowConfig{..}
  where
- osxHowToSendText = SendTextByKey
- osxDelay         = 0
+ osxHowToSendText = defaultHowToSendText
+ osxDelays        = defaultOSXDelays
+
+{-|@
+= 'SendTextByKey'
+@-}
+defaultHowToSendText :: HowToSendText
+defaultHowToSendText = SendTextByKey
+
+{-|@
+'osxStepDelays' = 0
+@-}
+defaultOSXDelays :: OSXDelays
+defaultOSXDelays = OSXDelays {..}
+ where
+ osxStepDelay = 0
 
 --------------------------------------------------------------------------------
 

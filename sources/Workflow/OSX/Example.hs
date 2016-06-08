@@ -9,6 +9,8 @@ import Workflow.Core
 
 import Control.Monad                 (replicateM_)
 
+--------------------------------------------------------------------------------
+
 {- |
 
 @
@@ -20,19 +22,39 @@ main = do
  putStrLn "Workflow.OSX.Example..."
  delayMilliseconds 1000
 
+ -- attemptWorkflow testInsert -- Works
+ attemptWorkflow testDerived -- Doesn't work
+
  -- attemptWorkflow testHolding
- attemptWorkflow testDerived
  -- attemptWorkflow testChrome
  -- attemptWorkflow testDSL
- -- attemptWorkflow testAll
- -- Cocoa.sendText "aα"
  -- testMouse
 
-testHolding = do
-  -- press "H-t"
-  s <- copy
-  insert "w"
-  -- insert s
+--------------------------------------------------------------------------------
+
+attemptWorkflow a = do
+ putStrLn "\n"
+ -- putStrLn $ showWorkflow a
+ runWorkflow defaultOSXWorkflowConfig{osxHowToSendText = SendTextByChar} a
+
+cut :: (MonadWorkflow m) => m String
+cut = do
+ sendKeyChord [CommandModifier] XKey
+ delay 100 -- TODO how long does it need to wait?
+ getClipboard
+
+-- | access the currently selected region from Haskell, via the clipboard
+copy :: (MonadWorkflow m) => m String
+copy = do
+ sendKeyChord [CommandModifier] CKey
+ delay 100 -- TODO how long does it need to wait?
+ getClipboard
+
+paste :: (MonadWorkflow m) => m ()
+paste = do
+ sendKeyChord [CommandModifier] VKey
+
+--------------------------------------------------------------------------------
 
 testMouse = do
  -- Cocoa.clickMouse 0 2 OSXLeftButton
@@ -44,17 +66,13 @@ testMouse = do
  delayMilliseconds 1000
  Cocoa.clickMouse 0 1 OSXMiddleButton
 
-testAll = do
+testInsert = do
   insert "aα"
-
-attemptWorkflow a = do
- putStrLn "\n"
- -- putStrLn $ showWorkflow a
- runWorkflow defaultOSXWorkflowConfig a
 
 testDerived = do
  s <- cut
  delay 30
+ insert "w"
  insert $ reverse s
 
 testDSL :: Workflow ClipboardText
@@ -80,7 +98,6 @@ backWord = do
 forWord = do
  sendKeyChord [OptionModifier] RightArrowKey
 
-
 -- keyboard shortcuts don't need lag between each Keypress (hence
 -- 'replicateM_', without 'interleave $ delay 25000'). only
 -- interworkflow needs lag (e.g. a mini-buffer pop-up).
@@ -94,19 +111,4 @@ testChrome = do
  delay 1000
  markWord
 
-cut :: (MonadWorkflow m) => m String
-cut = do
- sendKeyChord [CommandModifier] XKey
- delay 100 -- TODO how long does it need to wait?
- getClipboard
-
--- | access the currently selected region from Haskell, via the clipboard
-copy :: (MonadWorkflow m) => m String
-copy = do
- sendKeyChord [CommandModifier] CKey
- delay 100 -- TODO how long does it need to wait?
- getClipboard
-
-paste :: (MonadWorkflow m) => m ()
-paste = do
- sendKeyChord [CommandModifier] VKey
+--------------------------------------------------------------------------------
