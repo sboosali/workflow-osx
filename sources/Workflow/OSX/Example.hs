@@ -17,10 +17,11 @@ stack build && stack exec -- example-workflow-osx
 
 -}
 main = do
-  delayMilliseconds 1000
+ putStrLn "Workflow.OSX.Example..."
+ delayMilliseconds 1000
 
-  attemptWorkflow testHolding
- -- attemptWorkflow testDerived
+ -- attemptWorkflow testHolding
+ attemptWorkflow testDerived
  -- attemptWorkflow testChrome
  -- attemptWorkflow testDSL
  -- attemptWorkflow testAll
@@ -52,9 +53,9 @@ attemptWorkflow a = do
  runWorkflow a
 
 testDerived = do
- _ <- copy
+ s <- copy
  delay 100
- paste
+ insert $ reverse s
 
 testDSL :: Workflow ClipboardText
 testDSL = do
@@ -92,6 +93,12 @@ testChrome = do
  replicateM_ 10 backWord
  delay 1000
  markWord
+
+cut :: (MonadWorkflow m) => m String
+cut = do
+ sendKeyChord [CommandModifier] XKey
+ delay 100 -- TODO how long does it need to wait?
+ getClipboard
 
 -- | access the currently selected region from Haskell, via the clipboard
 copy :: (MonadWorkflow m) => m String

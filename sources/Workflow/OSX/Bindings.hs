@@ -6,11 +6,11 @@ module Workflow.OSX.Bindings where
 import Workflow.OSX.Extra
 import Workflow.OSX.Foreign
 import Workflow.OSX.Marshall
-import Workflow.OSX.Types
+import Workflow.OSX.Types hiding (setClipboard)
+import Workflow.Keys (char2keypress)
 
 import Foreign
 import Foreign.C
-import Foreign.C.String                   (peekCString, withCString)
 import Data.Char (ord)
 import Control.Monad.IO.Class
 import Numeric.Natural
@@ -19,24 +19,48 @@ import Control.Exception (bracket,bracket_)
 --------------------------------------------------------------------------------
 -- Workflow types
 
-sendText :: (MonadIO m) => String -> m ()
+{- Problem: crashes apps
+(chrome, atom (...both use chrome) "unexpectedly quit", emacs hangs).
+
+-}
+sendText_byChar :: (MonadIO m) => String -> m ()
 -- sendText :: (MonadIO m) => (Monad m  m) => String -> m ()
-sendText s = liftIO $
+sendText_byChar s = liftIO $
  sequence_ $ intersperse (delayMilliseconds 30) (fmap sendChar s)
  --NOTE must pause between events
 
+{- Problem: ignores Unicode
+-}
+sendText_byKey :: (MonadIO m) => String -> m ()
+sendText_byKey
+    = fmap char2keypress
+  >>> catMaybes
+  >>> traverse_ (uncurry sendKeyChord_flags)
+
+{- Problem: pollutes clipboard, requires variable delays, race conditions, requires "H-v" hotkey, ...
+-}
+sendText_byClipboard :: (MonadIO m) => String -> m ()
+sendText_byClipboard s = do
+  setClipboard s
+  liftIO $ delayMilliseconds 30
+  sendKeyChord_flags [CommandModifier] VKey
+
+--------------------------------------------------------------------------------
+
 -- |
-sendKeyChord_flags :: (MonadIO m) => [Modifier] -> Key -> m () --TODO Only this identifier's ambiguous with wf types?
+sendKeyChord_flags :: (MonadIO m) => [Modifier] -> Key -> m ()
 sendKeyChord_flags (marshallModifiers -> flags) (marshallKey -> key) = liftIO $
   c_pressKey flags key
 
 -- |
-sendKeyChord_holding :: (MonadIO m) => [Modifier] -> Key -> m () --TODO Only this identifier's ambiguous with wf types?
+sendKeyChord_holding :: (MonadIO m) => [Modifier] -> Key -> m ()
 sendKeyChord_holding
  (fmap modifier2key -> fmap marshallKey -> mods)
  (marshallKey -> key)
  = liftIO $
   pressKeyChord mods key
+
+--------------------------------------------------------------------------------
 
 sendMouseClick :: (MonadIO m) => [Modifier] -> Natural -> MouseButton -> m ()
 sendMouseClick (marshallModifiers -> flags) times (marshallButton -> button) =
@@ -44,7 +68,6 @@ sendMouseClick (marshallModifiers -> flags) times (marshallButton -> button) =
 
 -- sendMouseScroll
 -- sendMouseScroll =
-
 
 --------------------------------------------------------------------------------
 

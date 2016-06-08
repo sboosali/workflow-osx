@@ -1,7 +1,6 @@
 -- | assorted functionality, imported by most modules in this package.
 module Workflow.OSX.Extra
  ( module Workflow.OSX.Extra
- , (<>), traverse_
  , module X
  ) where
 
@@ -10,13 +9,15 @@ import Data.Hashable as X (Hashable)
 
 import Data.Data as X (Data)
 import           GHC.Generics               as X  (Generic)
-import           Data.Foldable                   (traverse_)
-import Data.Monoid        ((<>))
+import           Data.Foldable                  as X (traverse_)
+import Data.Monoid        as X ((<>))
 import Data.List as X
+import Control.Arrow as X ((>>>))
+import Data.Maybe        as X (catMaybes)
+
 import Control.Concurrent (threadDelay)
 import Data.Word (Word16,Word32)
 import Numeric.Natural (Natural)
-
 
 delayMilliseconds :: Int -> IO ()
 delayMilliseconds t = threadDelay (t*1000)
