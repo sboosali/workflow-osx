@@ -50,11 +50,11 @@ testAll = do
 attemptWorkflow a = do
  putStrLn "\n"
  -- putStrLn $ showWorkflow a
- runWorkflow a
+ runWorkflow defaultOSXWorkflowConfig a
 
 testDerived = do
- s <- copy
- delay 100
+ s <- cut
+ delay 30
  insert $ reverse s
 
 testDSL :: Workflow ClipboardText

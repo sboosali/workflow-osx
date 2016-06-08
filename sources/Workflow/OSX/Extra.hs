@@ -14,10 +14,10 @@ import Data.Monoid        as X ((<>))
 import Data.List as X
 import Control.Arrow as X ((>>>))
 import Data.Maybe        as X (catMaybes)
+import Numeric.Natural as X (Natural)
 
 import Control.Concurrent (threadDelay)
 import Data.Word (Word16,Word32)
-import Numeric.Natural (Natural)
 
 delayMilliseconds :: Int -> IO ()
 delayMilliseconds t = threadDelay (t*1000)

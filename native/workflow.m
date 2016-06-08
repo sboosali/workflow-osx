@@ -279,15 +279,15 @@ void clickMouse
 void sendUnichar (unichar c) {
     CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
     CGEventRef down = CGEventCreateKeyboardEvent(source, 0, true);
-    CGEventRef up   = CGEventCreateKeyboardEvent(source, 0, false);
+    // CGEventRef up   = CGEventCreateKeyboardEvent(source, 0, false);
 
     CGEventKeyboardSetUnicodeString(down, 1, &c);
     CGEventPost(kCGHIDEventTap, down);
-    CGEventKeyboardSetUnicodeString(up, 1, &c);
-    CGEventPost(kCGHIDEventTap, up);
+    // CGEventKeyboardSetUnicodeString(up, 1, &c);
+    // CGEventPost(kCGHIDEventTap, up);
 
     CFRelease(down);
-    CFRelease(up);
+    // CFRelease(up);
 }
 
 void getCursorPosition(CGPoint* p) {
