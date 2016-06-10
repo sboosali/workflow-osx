@@ -5,6 +5,47 @@
 ////////////////////////////////////////////////////////////////////////////////
 // private helpers
 
+/* Event taps
+
+
+   enum CGEventTapLocation {
+   kCGHIDEventTap = 0,
+   kCGSessionEventTap,
+   kCGAnnotatedSessionEventTap
+   };
+
+   kCGHIDEventTap Specifies that an event tap is placed at the point where HID system events enter the window server.
+
+   kCGSessionEventTap Specifies that an event tap is placed at the point where HID system and remote control events enter a login session.
+
+   kCGAnnotatedSessionEventTap Specifies that an event tap is placed at the point where session events have been annotated to flow to an application.
+
+ */
+
+
+/* enum CGEventSourceStateID {
+   kCGEventSourceStatePrivate = -1,
+   kCGEventSourceStateCombinedSessionState = 0,
+   kCGEventSourceStateHIDSystemState = 1
+   };
+
+   kCGEventSourceStatePrivate
+   Specifies that an event source should use a private event state table.
+
+   kCGEventSourceStateCombinedSessionState
+   Specifies that an event source should use the event state table that reflects the combined state of all event sources posting to the current user login session.
+
+   kCGEventSourceStateHIDSystemState
+   Specifies that an event source should use the event state table that reflects the combined state of all hardware event sources posting from the HID system.
+
+   Two pre-existing event state tables are defined:
+
+   The kCGEventSourceStateCombinedSessionState table reflects the combined state of all event sources posting to the current user login session. If your program is posting events from within a login session, you should use this source state when you create an event source.
+
+   The kCGEventSourceStateHIDSystemState table reflects the combined state of all hardware event sources posting from the HID system. If your program is a daemon or a user space device driver interpreting hardware state and generating events, you should use this source state when you create an event source.
+
+*/
+
 /* appInfo
 
  // NSLog(@"%@", appInfo);
@@ -272,41 +313,51 @@ void clickMouse
     clickMouseAt(modifiers,  numClicks,  mouseButton,  mouseDown,  mouseUp, p.x,  p.y);
 }
 
+void getCursorPosition(CGPoint* p) {
+  *p = CGEventGetLocation(CGEventCreate(NULL));
+}
+
+/*
+  CGEventCreateScrollWheelEvent
+*/
+void scrollMouse() {
+}
+
+/*
+  http://stackoverflow.com/questions/8059667/set-the-mouse-location
+*/
+void setCursorPosition(CGFloat x, CGFloat y) {
+  // CGPoint p;
+  // p.x = x;
+  // p.y = y;
+
+  CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
+  CGEventRef mouse = CGEventCreateMouseEvent (NULL, kCGEventMouseMoved, CGPointMake(x,y), 0);
+
+  CGEventPost(kCGHIDEventTap, mouse);
+
+  CFRelease(mouse);
+  CFRelease(source);
+}
+
 /*
  CGEventCreateKeyboardEvent(CGEventSourceRef __nullable source, CGKeyCode virtualKey, bool keyDown)
 
  */
 void sendUnichar (unichar c) {
-    CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateHIDSystemState);
+    CGEventSourceStateID state = kCGEventSourceStateCombinedSessionState;
+
+    CGEventSourceRef source = CGEventSourceCreate(state);
     CGEventRef down = CGEventCreateKeyboardEvent(source, 0, true);
-    // CGEventRef up   = CGEventCreateKeyboardEvent(source, 0, false);
+    CGEventRef up   = CGEventCreateKeyboardEvent(source, 0, false);
+
+    CGEventTapLocation tap = kCGSessionEventTap;
 
     CGEventKeyboardSetUnicodeString(down, 1, &c);
-    CGEventPost(kCGHIDEventTap, down);
-    // CGEventKeyboardSetUnicodeString(up, 1, &c);
-    // CGEventPost(kCGHIDEventTap, up);
+    CGEventPost(tap, down);
+    CGEventKeyboardSetUnicodeString(up, 1, &c);
+    CGEventPost(tap, up);
 
     CFRelease(down);
-    // CFRelease(up);
-}
-
-void getCursorPosition(CGPoint* p) {
-    *p = CGEventGetLocation(CGEventCreate(NULL));
-}
-
-/*
- http://stackoverflow.com/questions/8059667/set-the-mouse-location
- */
-void setCursorPosition(CGFloat x, CGFloat y) {
-    // CGPoint p;
-    // p.x = x;
-    // p.y = y;
-
-    CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
-    CGEventRef mouse = CGEventCreateMouseEvent (NULL, kCGEventMouseMoved, CGPointMake(x,y), 0);
-
-    CGEventPost(kCGHIDEventTap, mouse);
-
-    CFRelease(mouse);
-    CFRelease(source);
+    CFRelease(up);
 }

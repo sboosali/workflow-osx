@@ -1,3 +1,4 @@
+
 {-# LANGUAGE NoMonomorphismRestriction, FlexibleContexts #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures -fno-warn-unused-binds -fno-warn-unused-matches #-}
 -- | some example workflows you can derive from the primitives in 'Workflow'. (see the source)
@@ -6,6 +7,7 @@ import qualified Workflow.OSX.Bindings as Cocoa
 import Workflow.OSX
 
 import Workflow.Core
+import Workflow.Derived
 
 import Control.Monad                 (replicateM_)
 
@@ -22,7 +24,7 @@ main = do
  putStrLn "Workflow.OSX.Example..."
  delayMilliseconds 1000
 
- attemptWorkflow testInsert -- Works
+ -- attemptWorkflow testInsert -- Works
  attemptWorkflow testDerived -- Doesn't work
 
  -- attemptWorkflow testHolding
@@ -32,11 +34,12 @@ main = do
 
 --------------------------------------------------------------------------------
 
+attemptWorkflow :: WorkflowT IO a -> IO a
 attemptWorkflow a = do
  putStrLn "\n"
- -- putStrLn $ showWorkflow a
- runWorkflow
-   defaultOSXWorkflowConfig{osxHowToSendText = SendTextByChar, osxStepDelay = 1000}
+ --TODO putStrLn $ showWorkflow a
+ runWorkflowT
+   defaultOSXWorkflowConfig{osxHowToSendText = SendTextByChar, osxStepDelay = 30}
    a
 
 cut :: (MonadWorkflow m) => m String
@@ -75,7 +78,7 @@ testInsert = do
 testDerived = do
  s <- cut
  delay 30
- insert "w"
+ --insert "w"
  insert $ reverse s
 
 testDSL :: Workflow ClipboardText
@@ -105,7 +108,7 @@ forWord = do
 -- 'replicateM_', without 'interleave $ delay 25000'). only
 -- interworkflow needs lag (e.g. a mini-buffer pop-up).
 -- tested in Chrome.
-testChrome :: Workflow ()
+-- testChrome :: Workflow ()
 testChrome = do
  delay 5000
  replicateM_ 10 forWord
