@@ -76,35 +76,41 @@ library
     hs-source-dirs: sources
 
     exposed-modules:
-        Workflow.OSX
-        Workflow.OSX.Types
-        Workflow.OSX.Foreign
-        Workflow.OSX.Bindings
-        Workflow.OSX.Constants
-        Workflow.OSX.Marshall
-        Workflow.OSX.Execute
+                    Workflow.OSX
+                    Workflow.OSX.Types
+                    Workflow.OSX.Foreign
+                    Workflow.OSX.Bindings
+                    Workflow.OSX.Constants
+                    Workflow.OSX.Marshall
+                    Workflow.OSX.Execute
+                    Workflow.OSX.Screenshot
 
     -- other-modules:
-        Workflow.OSX.Extra
-        Workflow.OSX.Example
+                    Workflow.OSX.Extra
+                    Workflow.OSX.Example
 
     build-depends:
-          base >=4.7 && <5.0
+                  base >=4.7 && <5.0
 
-        , workflow-types
-        , workflow-extra
+                , workflow-types
+                , workflow-extra
 
-        , mtl
-        , transformers
-        , filepath
+                , mtl
+                , transformers
+                , filepath
 
-        , free
-        , exceptions
+                , free
+                , exceptions
 
-        , deepseq
-        , hashable
-        , c-storable-deriving
-        , data-default-class
+                , deepseq
+                , hashable
+                , c-storable-deriving
+                , data-default-class
+
+                , turtle
+                , managed
+                , JuicyPixels
+                , string-conv
 
     default-language:   Haskell2010
     ghc-options:        -Wall

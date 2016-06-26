@@ -1,5 +1,6 @@
 
 {-# LANGUAGE NoMonomorphismRestriction, FlexibleContexts #-}
+{-# LANGUAGE LambdaCase, RankNTypes, RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures -fno-warn-unused-binds -fno-warn-unused-matches #-}
 -- | some example workflows you can derive from the primitives in 'Workflow'. (see the source)
 module Workflow.OSX.Example where
@@ -8,6 +9,8 @@ import Workflow.OSX
 
 import Workflow.Core
 import Workflow.Derived
+
+import Codec.Picture as PNG
 
 import Control.Monad                 (replicateM_)
 
@@ -25,12 +28,14 @@ main = do
  delayMilliseconds 1000
 
  -- attemptWorkflow testInsert -- Works
- attemptWorkflow testDerived -- Doesn't work
+ -- attemptWorkflow testDerived -- Doesn't work
 
- -- attemptWorkflow testHolding
+ -- attemptworkflow testHolding
  -- attemptWorkflow testChrome
  -- attemptWorkflow testDSL
  -- testMouse
+
+ attemptScreenshot
 
 --------------------------------------------------------------------------------
 
@@ -116,5 +121,72 @@ testChrome = do
  replicateM_ 10 backWord
  delay 1000
  markWord
+
+--------------------------------------------------------------------------------
+
+whichDynamicImage
+  :: PNG.DynamicImage
+  -> String
+whichDynamicImage = \case
+ PNG.ImageY8 _ -> "ImageY8"
+ PNG.ImageY16 _ -> "ImageY16"
+ PNG.ImageYF _ -> "ImageYF"
+ PNG.ImageYA8 _ -> "ImageYA8"
+ PNG.ImageYA16 _ -> "ImageYA16"
+ PNG.ImageRGB8 _ -> "ImageRGB8"
+ PNG.ImageRGB16 _ -> "ImageRGB16"
+ PNG.ImageRGBF _ -> "ImageRGBF"
+ PNG.ImageRGBA8 _ -> "ImageRGBA8"
+ PNG.ImageRGBA16 _ -> "ImageRGBA16"
+ PNG.ImageYCbCr8 _ -> "ImageYCbCr8"
+ PNG.ImageCMYK8 _ -> "ImageCMYK8"
+ PNG.ImageCMYK16 _ -> "ImageCMYK16"
+
+fromDynamicImage
+  :: (forall pixel. PNG.Image pixel -> r)
+  -> PNG.DynamicImage
+  -> r
+fromDynamicImage f = \case
+ PNG.ImageY8 i -> f i
+ PNG.ImageY16 i -> f i
+ PNG.ImageYF i -> f i
+ PNG.ImageYA8 i -> f i
+ PNG.ImageYA16 i -> f i
+ PNG.ImageRGB8 i -> f i
+ PNG.ImageRGB16 i -> f i
+ PNG.ImageRGBF i -> f i
+ PNG.ImageRGBA8 i -> f i
+ PNG.ImageRGBA16 i -> f i
+ PNG.ImageYCbCr8 i -> f i
+ PNG.ImageCMYK8 i -> f i
+ PNG.ImageCMYK16 i -> f i
+
+brightenRGB8 :: Int -> PNG.Image PNG.PixelRGB8 -> PNG.Image PNG.PixelRGB8
+brightenRGB8 i = PNG.pixelMap go
+  where
+  up v = fromIntegral (fromIntegral v + i)
+  go (PNG.PixelRGB8 r g b) = PNG.PixelRGB8 (up r) (up g) (up b)
+
+{-
+
+e.g.
+
+@
+@
+
+-}
+attemptScreenshot = do
+ takeScreenshot >>= \case
+   Left e -> putStrLn e
+   Right i -> do
+     print $ whichDynamicImage i
+     print $ fromDynamicImage getDimensions i
+     let a = PNG.convertRGB8 i
+     let b = brightenRGB8 100 a
+     PNG.savePngImage "brighter_screenshot.png" (PNG.ImageRGB8 b)
+     return ()
+ where
+ getDimensions :: PNG.Image x -> (Int,Int)
+ getDimensions PNG.Image{..} = (imageWidth,imageHeight)
 
 --------------------------------------------------------------------------------

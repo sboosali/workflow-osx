@@ -7,7 +7,7 @@ import Workflow.OSX.Extra
 import Workflow.OSX.Foreign
 import Workflow.OSX.Marshall
 import Workflow.OSX.Types hiding (setClipboard)
-import Workflow.Keys (char2keypress)
+import Workflow.Keys (char2keychord)
 
 import Foreign
 import Foreign.C
@@ -33,7 +33,7 @@ sendText_byChar s = liftIO $
 -}
 sendText_byKey :: (MonadIO m) => String -> m ()
 sendText_byKey
-    = fmap char2keypress
+    = fmap char2keychord
   >>> catMaybes
   >>> traverse_ (uncurry sendKeyChord_flags)
 

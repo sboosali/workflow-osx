@@ -7,6 +7,7 @@ import Workflow.Types (MilliSeconds)
 
 import Control.DeepSeq as X (NFData)
 import Data.Hashable as X (Hashable)
+import Data.String.Conv as X
 
 import Data.Data as X (Data)
 import           GHC.Generics               as X  (Generic)
@@ -19,6 +20,9 @@ import Numeric.Natural as X (Natural)
 
 import Control.Concurrent (threadDelay)
 import Data.Word (Word16,Word32)
+import qualified Turtle as SH
+import Prelude hiding (FilePath)
+import qualified Prelude
 
 delayMilliseconds :: Int -> IO ()
 delayMilliseconds t = threadDelay (t*1000)
@@ -33,3 +37,9 @@ unsafeNatToWord32 = fromInteger . toInteger
 
 nat2ms :: Natural -> MilliSeconds
 nat2ms = fromIntegral
+
+fp2s :: SH.FilePath -> Prelude.FilePath
+fp2s = fp2t >>> toS
+
+fp2t :: SH.FilePath -> SH.Text
+fp2t = SH.format SH.fp
