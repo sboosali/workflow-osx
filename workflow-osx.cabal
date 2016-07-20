@@ -130,12 +130,11 @@ library
 executable example-workflow-osx
     if !os(osx)
        buildable: False
-
-    -- without:
-    -- <command line>: cannot satisfy -package-id workflow-osx-0.0.1-inplace
-    --
-    -- with:
-    -- Package workflow-osx-0.0.1 can't be built on this system.
+       -- without:
+       -- <command line>: cannot satisfy -package-id workflow-osx-0.0.1-inplace
+       --
+       -- with:
+       -- Package workflow-osx-0.0.1 can't be built on this system.
 
     main-is:        Main.hs
     hs-source-dirs: .
@@ -144,5 +143,23 @@ executable example-workflow-osx
     ghc-options:      -Wall
 
     build-depends:
-        base >=4.7 && <5.0
-      , workflow-osx
+                  base >=4.7 && <5.0
+                , workflow-osx
+
+
+executable test-workflow-osx
+    if !os(osx)
+       buildable: False
+
+    main-is:        Workflow/OSX/CommandLine.hs
+    hs-source-dirs: executables
+
+    default-language: Haskell2010
+    ghc-options:      -Wall
+
+    build-depends:
+                  base >=4.7 && <5.0
+                , workflow-osx
+                , Earley
+
+

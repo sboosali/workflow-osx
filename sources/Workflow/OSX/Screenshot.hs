@@ -10,7 +10,7 @@ import Turtle
 --import Control.Monad.Managed
 import Codec.Picture
 
-{-|
+{-| Temporary file template.
 
 @= "workflow-osx.XXXXXX"@
 
