@@ -160,6 +160,8 @@ executable test-workflow-osx
     build-depends:
                   base >=4.7 && <5.0
                 , workflow-osx
+                , workflow-types
+                , data-default-class
                 , Earley
 
 
