@@ -64,8 +64,21 @@ NSArray<NSString*>* c2NSStringArray(const char* c_array_of_c_strings[], int leng
     return ns_array_of_ns_strings;
 }
 
+void beginRunLoop() {
+    [[NSRunLoop currentRunLoop] run];
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
+/*
+ 
+ self.recognizer.delegate                = self;
+ self.handler = 0;
+ - (void) speechRecognizer:... didRecognizeCommand:... {
+     self.handler(recognition);
+ }
+ 
+ */
 @implementation Recognizer
 
 - (id) init {
@@ -110,6 +123,14 @@ void start_NSSpeechRecognizer(Recognizer* this) {
 
 void stop_NSSpeechRecognizer(Recognizer* this) {
     [this.recognizer stopListening];
+}
+
+void setExclusivity_NSSpeechRecognizer(Recognizer* r, BOOL b) {
+    r.recognizer.blocksOtherRecognizers = b;
+}
+
+void setForegroundOnly_NSSpeechRecognizer(Recognizer* r, BOOL b) {
+    r.recognizer.listensInForegroundOnly = b;
 }
 
 // {{ const char* _[] }} is an array of strings
