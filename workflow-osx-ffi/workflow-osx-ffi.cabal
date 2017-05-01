@@ -1,0 +1,173 @@
+name:                workflow-osx-ffi
+version:             0.0.0
+synopsis:            TODO
+description:         
+ .
+ TODO
+ . 
+ see the source of "Workflow.OSX.Example" for an example.
+ .
+ transitive dependencies:
+ .
+ <<.png>>
+
+homepage:            http://github.com/sboosali/workflow-osx-ffi#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Spiros Boosalis
+maintainer:          samboosalis@gmail.com
+copyright:           2017 Spiros Boosalis
+category:            TODO
+build-type:          Simple
+cabal-version:       >=1.10
+
+-- PVP
+-- https://wiki.haskell.org/Package_versioning_policy
+-- "A.B is known as the major version number, and C the minor version number."
+
+extra-source-files:
+  README.md
+  .gitignore
+  .travis.yml
+  HLint.hs
+  stack.yaml
+
+-- data-files:
+
+--  data/
+
+source-repository head
+  type:     git
+  location: https://github.com/sboosali/workflow-osx-ffi
+
+
+library
+ hs-source-dirs:      sources
+ default-language:    Haskell2010
+ ghc-options:
+  -Wall
+  # disable
+  -fno-warn-unticked-promoted-constructors
+  # enable
+  -fwarn-incomplete-uni-patterns
+  -fwarn-incomplete-record-updates
+  -fwarn-identities
+  -fwarn-missing-fields
+
+ default-extensions: AutoDeriveTypeable DeriveDataTypeable DeriveGeneric
+                     DeriveFunctor DeriveFoldable DeriveTraversable
+                     LambdaCase EmptyCase TypeOperators PostfixOperators
+                     ViewPatterns BangPatterns KindSignatures
+                     NamedFieldPuns RecordWildCards TupleSections
+                     MultiWayIf DoAndIfThenElse EmptyDataDecls
+                     MultiParamTypeClasses FlexibleContexts FlexibleInstances
+                     TypeFamilies FunctionalDependencies
+                     ScopedTypeVariables StandaloneDeriving
+
+ exposed-modules:
+                 Workflow.OSX
+                 Workflow.OSX.Types
+                 Workflow.OSX.Core		 
+-- other-modules:
+                 Workflow.OSX.Extra
+                 Workflow.OSX.Example
+
+ build-depends:
+               base >=4.7 && <5
+
+             , spiros
+
+             , deepseq
+             , hashable
+             , semigroups
+
+--              , transformers
+--              , mtl
+--              , containers
+--              , bytestring
+--              , stm
+--              , template-haskell
+
+--              , lens
+--              , exceptions
+--              , free
+--              , bifunctors
+--              , profunctors
+--              , either
+--              , pipes
+--              , formatting
+--              , servant
+--              , Earley
+--              , split
+--              , interpolatedstring-perl6
+--              , wl-pprint-text
+--              , text
+--              , aeson
+--              , unordered-containers
+--              , async
+--              , parallel
+
+
+executable example-workflow-osx-ffi
+ hs-source-dirs:      executables
+ main-is:             Main.hs
+
+ default-language:    Haskell2010
+ ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+
+ build-depends:
+    base
+  , workflow-osx-ffi
+
+
+-- $ stack test doctest
+test-suite doctest
+ hs-source-dirs:      tests
+ main-is:             DocTest.hs
+ type:                exitcode-stdio-1.0
+
+ default-language:    Haskell2010
+ ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+
+ build-depends:
+    base
+  , workflow-osx-ffi
+  , doctest
+
+
+-- $ stack test unittest
+test-suite unittest
+ hs-source-dirs:      tests
+ main-is:             UnitTest.hs
+ type:                exitcode-stdio-1.0
+
+ default-language:    Haskell2010
+ ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
+
+ other-modules:
+  Workflow.OSX.Test
+
+ build-depends:
+    base
+  , workflow-osx-ffi
+  , hspec ==2.2.*
+  , QuickCheck ==2.8.*
+  -- , tasty
+  -- , tasty-quickcheck
+
+
+-- $ stack bench
+benchmark command
+ hs-source-dirs:      benchmarks
+ main-is:             Bench.hs
+ type:                exitcode-stdio-1.0
+
+ default-language: Haskell2010
+ ghc-options:      -Wall -threaded -rtsopts -with-rtsopts=-N
+
+ build-depends:
+    base
+  , workflow-osx-ffi
+  , criterion
+  , deepseq
+

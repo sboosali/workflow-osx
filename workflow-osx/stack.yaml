@@ -3,10 +3,10 @@ compiler: ghc-8.0.2
 
 packages:
 - .
-
 - ../workflow-types
 - ../workflow-extra
 
 extra-deps:
 - c-storable-deriving-0.1.3
+- workflow-extra-0.0.0
 

@@ -1,0 +1,40 @@
+# my
+ignore/
+notes
+goals
+TODO
+cbits/main
+.projectile
+
+# Haskell
+cabal.project.local
+dist-newstyle/
+dist/
+cabal-dev
+*.o
+*.hi
+*.chi
+*.chs.h
+.virtualenv
+.hsenv
+.cabal-sandbox/
+cabal.sandbox.config
+cabal.config
+report.html
+.stack-work/
+
+# nix
+result
+result/
+
+# Emacs
+\#*
+*~
+.#*
+\#*\#
+*.log
+TAGS
+
+# OS X
+.DS_Store
+
