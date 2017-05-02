@@ -65,47 +65,19 @@ library
                      ScopedTypeVariables StandaloneDeriving
 
  exposed-modules:
-                 Workflow.OSX
-                 Workflow.OSX.Types
-                 Workflow.OSX.Core		 
+                 Workflow.OSX.C
+                 Workflow.OSX.C.Types
+                 Workflow.OSX.C.Bindings	 
+                 Workflow.OSX.C.Constants		 
+                 Workflow.OSX.C.Foreign	 
 -- other-modules:
-                 Workflow.OSX.Extra
-                 Workflow.OSX.Example
+                 Workflow.OSX.C.Example
+                 Workflow.OSX.C.Extra
 
  build-depends:
                base >=4.7 && <5
-
              , spiros
-
-             , deepseq
-             , hashable
-             , semigroups
-
---              , transformers
---              , mtl
---              , containers
---              , bytestring
---              , stm
---              , template-haskell
-
---              , lens
---              , exceptions
---              , free
---              , bifunctors
---              , profunctors
---              , either
---              , pipes
---              , formatting
---              , servant
---              , Earley
---              , split
---              , interpolatedstring-perl6
---              , wl-pprint-text
---              , text
---              , aeson
---              , unordered-containers
---              , async
---              , parallel
+             , transformers
 
 
 executable example-workflow-osx-ffi
@@ -118,56 +90,4 @@ executable example-workflow-osx-ffi
  build-depends:
     base
   , workflow-osx-ffi
-
-
--- $ stack test doctest
-test-suite doctest
- hs-source-dirs:      tests
- main-is:             DocTest.hs
- type:                exitcode-stdio-1.0
-
- default-language:    Haskell2010
- ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
-
- build-depends:
-    base
-  , workflow-osx-ffi
-  , doctest
-
-
--- $ stack test unittest
-test-suite unittest
- hs-source-dirs:      tests
- main-is:             UnitTest.hs
- type:                exitcode-stdio-1.0
-
- default-language:    Haskell2010
- ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
-
- other-modules:
-  Workflow.OSX.Test
-
- build-depends:
-    base
-  , workflow-osx-ffi
-  , hspec ==2.2.*
-  , QuickCheck ==2.8.*
-  -- , tasty
-  -- , tasty-quickcheck
-
-
--- $ stack bench
-benchmark command
- hs-source-dirs:      benchmarks
- main-is:             Bench.hs
- type:                exitcode-stdio-1.0
-
- default-language: Haskell2010
- ghc-options:      -Wall -threaded -rtsopts -with-rtsopts=-N
-
- build-depends:
-    base
-  , workflow-osx-ffi
-  , criterion
-  , deepseq
 
