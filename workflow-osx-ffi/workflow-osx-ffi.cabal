@@ -54,6 +54,18 @@ library
   -fwarn-identities
   -fwarn-missing-fields
 
+ default-extensions: AutoDeriveTypeable, DeriveDataTypeable, DeriveFunctor, DeriveGeneric
+
+ include-dirs:     native
+ includes:         native/Workflow.h
+ install-includes: native/Workflow.h
+ c-sources:        native/Workflow.m
+
+ cc-options: -Wno-deprecated-declarations
+--  the functionality I needed was found only in some deprecated APIs
+ ld-options: -ObjC
+ frameworks: Cocoa
+
  default-extensions: AutoDeriveTypeable DeriveDataTypeable DeriveGeneric
                      DeriveFunctor DeriveFoldable DeriveTraversable
                      LambdaCase EmptyCase TypeOperators PostfixOperators
@@ -81,6 +93,7 @@ library
 --             , stm
 
              , c-storable-deriving
+
 
 
 executable example-workflow-osx-ffi

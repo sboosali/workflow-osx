@@ -5,9 +5,9 @@
 -- | some example workflows you can derive from the primitives in 'Workflow'. (see the source)
 module Workflow.OSX.C.Example where
 import qualified Workflow.OSX.C.Bindings as C
-import Workflow.OSX.C
+--import Workflow.OSX.C
 
-import Control.Monad                 (replicateM_)
+--import Control.Monad                 (replicateM_)
 import Control.Concurrent(threadDelay)
 
 --------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ import Control.Concurrent(threadDelay)
 {- |
 
 @
-stack build && stack exec -- example-workflow-osx
+stack build && stack exec -- example-workflow-osx-ffi
 @
 
 OSX.sendText_byChar
