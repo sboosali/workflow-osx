@@ -3,8 +3,9 @@ compiler: ghc-8.0.2
 
 packages:
 - .
-- ../workflow-types
-- ../workflow-extra
+#- ../workflow-types
+#- ../workflow-extra
 
 extra-deps:
 - c-storable-deriving-0.1.3
+- spiros-0.0.0

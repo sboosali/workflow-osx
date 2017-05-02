@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE DeriveAnyClass, PatternSynonyms, ConstraintKinds, FlexibleContexts #-}
 module Workflow.OSX.C.Types where
 import Workflow.OSX.C.Extra
@@ -75,8 +76,10 @@ type CGEventType = Word32
 data OSXKey = OSXKey
   { osxModifiers :: CGEventFlags
   , osxKey       :: CGKeyCode
-  } deriving (Show,Read,Eq,Ord,Data,Generic,NFData,Hashable)
+  } deriving (Show,Read,Eq,Ord,Generic,NFData)
 
+fromOSXKey :: OSXKey -> (CGEventFlags,CGKeyCode)
+fromOSXKey (OSXKey ms k) = (ms,k)
 
 {- | relates a Haskell type with a Objective-C type:
 
@@ -96,14 +99,14 @@ data OSXMouseButton' = OSXMouseButton
  { osxMouseButton :: CGMouseButton
  , osxMouseUp     :: CGEventType
  , osxMouseDown   :: CGEventType
- } deriving (Show,Read,Eq,Ord,Data,Generic,NFData,Hashable,CStorable)
+ } deriving (Show,Read,Eq,Ord,Generic,NFData,CStorable)
 
 -- instance Storable OSXMouseButton' where
 --  peek      = cPeek
 --  poke      = cPoke
 --  alignment = cAlignment
 --  sizeOf    = cSizeOf
- 
+
 {-|
 
 @<CoreGraphics/CGBase.h>@ defines:
@@ -143,7 +146,7 @@ typedef struct CGPoint CGPoint;
 data CGPoint = CGPoint
  { xCGPoint :: CGFloat
  , yCGPoint :: CGFloat
- } deriving (Show,Read,Eq,Ord,Data,Generic,NFData,Hashable,CStorable)
+ } deriving (Show,Read,Eq,Ord,Generic,NFData,CStorable)
 
 instance Storable CGPoint where
  peek      = cPeek
@@ -198,7 +201,7 @@ struct ProcessSerialNumber { unsigned long highLongOfPSN; unsigned long lowLongO
 data ProcessSerialNumber = ProcessSerialNumber
  { _highLongOfPSN :: CULong
  , _lowLongOfPSN  :: CULong
- } deriving (Show,Read,Eq,Ord,Data,Generic,NFData,Hashable,CStorable)
+ } deriving (Show,Read,Eq,Ord,Generic,NFData,CStorable)
 
 instance Storable ProcessSerialNumber where
  peek      = cPeek
@@ -232,7 +235,12 @@ data ApplicationInformation = ApplicationInformation
   , nsApplicationProcessIdentifier :: Word --TODO
   , nsApplicationProcessSerialNumber :: ProcessSerialNumber
   , nsWorkspaceApplicationKey :: NSRunningApplication --TODO
-  } deriving (Show,Read,Eq,Ord,Data,Generic,NFData,Hashable)
+  } deriving (Show,Read,Eq,Ord,Generic,NFData)
 
 type NSRunningApplication = () --TODO
 
+---
+
+type ApplicationName = String
+
+type ClipboardText = String

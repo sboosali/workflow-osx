@@ -1,3 +1,4 @@
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE ViewPatterns #-}
 {-| low-level bindings, with Haskell types.
 
@@ -13,22 +14,20 @@ all have different tradeoffs, which they document.
 module Workflow.OSX.C.Bindings where
 import Workflow.OSX.C.Extra
 import Workflow.OSX.C.Foreign
-import Workflow.OSX.C.Types hiding (setClipboard)
-import Workflow.Keys (char2keychord)
+import Workflow.OSX.C.Types
+import Workflow.OSX.C.Constants
 
-import Foreign
 import Foreign.C
 import Data.Char (ord)
-import Control.Monad.IO.Class
-import Numeric.Natural
-import Control.Exception (bracket,bracket_)
+import Control.Exception (bracket_)
+import Data.Maybe
 
 --------------------------------------------------------------------------------
 -- Workflow types
 
 {- |
 
-Problem: crashes some apps (chrome and atom "unexpectedly quit" (...both use chrome), emacs hangs). 
+Problem: crashes some apps (chrome and atom "unexpectedly quit" (...both use chrome), emacs hangs).
 
 -}
 insertByChar :: (MonadIO m) => String -> m ()
@@ -39,14 +38,14 @@ insertByChar s = liftIO $
 
 {- |
 
-Problem: partial (ignores Unicode). 
+Problem: partial (ignores Unicode).
 
 -}
 insertByKey :: (MonadIO m) => String -> m ()
 insertByKey
     = fmap char2osxkey
   >>> catMaybes
-  >>> traverse_ (uncurry c_pressKey)
+  >>> traverse_ (fromOSXKey > uncurry pressKey)
 
 {- |
 
@@ -57,9 +56,12 @@ insertByClipboard :: (MonadIO m) => String -> m ()
 insertByClipboard s = do
   setClipboard s
   liftIO $ delayMilliseconds 30
-  c_pressKey (NX_COMMANDMASK) VK_ANSI_V
+  pressKey (NX_COMMANDMASK) VK_ANSI_V
 
 --------------------------------------------------------------------------------
+
+pressKey :: (MonadIO m) => CGEventFlags -> CGKeyCode -> m ()
+pressKey ms k = liftIO $ c_pressKey ms k
 
 {-| Haskell chars are Unicode code-points:
 
@@ -79,7 +81,7 @@ TODO there are 1,000,000 hs chars, but UniChar only holds 2^16 ~ 65,000. utf-8 e
 sendChar :: (MonadIO m) => Char -> m ()
 sendChar c = liftIO $
  -- c_sendChar (unsafeIntToWord16 . ord $ c) --TODO
- if o <= maxWord16
+ if o <= fromIntegral maxWord16
  then c_sendChar (unsafeIntToWord16 o)
  else return ()
  where
@@ -138,24 +140,24 @@ setClipboard s = liftIO $
 
 --------------------------------------------------------------------------------
 
-currentApplication :: (MonadIO m) => m Application
+currentApplication :: (MonadIO m) => m ApplicationName
 currentApplication = liftIO $ do
  path <- currentApplicationPath
  return path
 
 -- |
 -- TODO Applications whose name/paths have Unicode characters may or may not marshall correctly. they should, unless we need CWString.
-currentApplicationPath :: (MonadIO m) => m String
+currentApplicationPath :: (MonadIO m) => m ApplicationName
 currentApplicationPath = liftIO $
  c_currentApplicationPath >>= peekCString
 
 -- |
-openURL :: (MonadIO m) => URL -> m ()
+openURL :: (MonadIO m) => String -> m ()
 openURL s = liftIO $
  withCString s c_openURL
 
 -- |
-openApplication :: (MonadIO m) => Application -> m ()
+openApplication :: (MonadIO m) => ApplicationName -> m ()
 openApplication s = liftIO $
  withCString s c_openApplication
 
@@ -328,9 +330,8 @@ char2osxkey c = case c of
  '>'  -> Just $ OSXKey (NX_SHIFTMASK    ) VK_ANSI_Period
  '/'  -> Just $ OSXKey (nullCGEventFlags) VK_ANSI_Slash
  '?'  -> Just $ OSXKey (NX_SHIFTMASK    ) VK_ANSI_Slash
- ' '  -> Just $ OSXKey (nullCGEventFlags) VK_ANSI_Space
- '\t' -> Just $ OSXKey (nullCGEventFlags) VK_ANSI_Tab
- '\n' -> Just $ OSXKey (nullCGEventFlags) VK_ANSI_Return
+ ' '  -> Just $ OSXKey (nullCGEventFlags) VK_Space
+ '\t' -> Just $ OSXKey (nullCGEventFlags) VK_Tab
+ '\n' -> Just $ OSXKey (nullCGEventFlags) VK_Return
 
  _    -> Nothing -- failed $ "{{ char2keychord "++(show c)++" }} not an ASCII, printable character"
-
